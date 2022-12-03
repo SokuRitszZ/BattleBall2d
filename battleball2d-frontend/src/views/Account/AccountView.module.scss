@@ -1,0 +1,25 @@
+$view-width: 400px;
+$view-height: 400px;
+
+.AccountView {
+  width: $view-width;
+  height: $view-height;
+  @apply shadow-2xl m-auto rounded-3xl;
+}
+
+.frame {
+  @apply h-full w-full p-10;
+  label, input {
+    display: block;
+    @apply m-2;
+  }
+  label {
+    @apply pl-1 text-gray-500 mb-0;
+  }
+  input {
+    @apply w-full p-2 rounded-xl border-2 border-gray-200 mb-4 mt-0;
+  }
+  button {
+    @apply text-gray-500 bg-gray-100 p-2 rounded-xl transition hover:bg-gray-200 hover:text-white active:bg-gray-300
+  }
+}

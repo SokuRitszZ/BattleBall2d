@@ -1,0 +1,7 @@
+.frame {
+  @apply shadow-2xl m-auto overflow-hidden rounded-2xl w-11/12 h-5/6;
+}
+
+.canvas {
+  @apply w-full h-full select-none z-10
+}
