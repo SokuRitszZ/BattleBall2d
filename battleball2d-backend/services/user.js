@@ -88,7 +88,8 @@ const getInfo = async id => {
 
   return R.ok({
     id: user.id,
-    username: user.username
+    username: user.username,
+    headIcon: user.headIcon
   });
 };
 

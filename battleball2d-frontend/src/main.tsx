@@ -7,6 +7,7 @@ import AccountView from "./views/Account/AccountView";
 import GameView from "./views/Game/GameView";
 import {Provider} from "react-redux";
 import store from "./redux/store";
+import LobbyView from "./views/Lobby/LobbyView";
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <BrowserRouter>
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
         <Routes>
           <Route path="/" element={<App/>}/>
           <Route path="/account" element={<AccountView/>}/>
+          <Route path="/lobby" element={<LobbyView/>}/>
           <Route path="/game" element={<GameView/>}/>
         </Routes>
       </Provider>

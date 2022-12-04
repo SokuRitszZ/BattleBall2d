@@ -16,6 +16,11 @@ const User = sequelize.define("User", {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: "111111"
+  },
+  headIcon: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: "https://sdfsdf.dev/500x500.png"
   }
 }, {
   tableName: "user",

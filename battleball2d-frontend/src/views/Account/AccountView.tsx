@@ -3,20 +3,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import style from "./AccountView.module.scss";
 import {useNavigate} from "react-router-dom";
 import {getInfoApi, loginApi, registerApi} from "../../script/api/user";
-import User, {setToken, setInfo, UserInfo} from "../../store/user";
+import User, {setToken, setInfo, UserInfo, getInfo} from "../../store/user";
 import UserStore from "../../store/user";
+import {catchRejection} from "@reduxjs/toolkit/dist/listenerMiddleware/utils";
 
 type PropType = {
 
 };
-
-async function register(
-  username: string,
-  password: string,
-  confirmPassowrd: string
-): Promise<void> {
-  console.log(username, password, confirmPassowrd);
-}
 
 function AccountView(props: PropType) {
   const isHandling = useState<Boolean>(false);
@@ -25,13 +18,12 @@ function AccountView(props: PropType) {
   useEffect(() => {
     setToken(localStorage.getItem("token") as string);
     isHandling[1](true);
-    getInfoApi()
-      .then((info: any) => {
-        setInfo(info);
+    getInfo()
+      .then(() => {
         isHandling[1](false);
-        navigate("/game");
+        navigate("/lobby");
       })
-      .catch((error) => {
+      .catch(err => {
         console.log("获取信息失败：token可能无效");
         isHandling[1](false);
       });
@@ -70,12 +62,11 @@ function AccountView(props: PropType) {
         }
       })
       .then(() => {
-        return getInfoApi()
+        return getInfo()
       })
-      .then((info: any) => {
-        setInfo(info);
+      .then(() => {
         isHandling[1](false);
-        navigate("/game");
+        navigate("/lobby");
       })
       .catch(reason => {
         console.log(`登陆失败：${reason}`);
