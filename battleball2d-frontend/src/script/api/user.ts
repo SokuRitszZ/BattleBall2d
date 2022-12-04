@@ -15,3 +15,10 @@ export function loginApi(username: string, password: string) {
     }
   });
 };
+
+export function getInfoApi() {
+  return api({
+    url: "/user/getinfo",
+    method: "GET"
+  });
+}

@@ -1,8 +1,12 @@
 const crypto = require("crypto");
 const R = require("../utils/R");
 const User = require("../db/models/User");
+const jwt = require("jsonwebtoken");
 
-const secretKey = "OWIEFHYGUIBRLKBHJLKHOIWEFHoewihwfou2y4r82hofbue";
+const {
+  PASSWORD_SECRETKEY,
+  JWT_SECRETKEY
+} = require("../config.json");
 
 const register = async (username, password, confirmedPassword) => {
   if (!username || !password || !confirmedPassword)
@@ -32,7 +36,7 @@ const register = async (username, password, confirmedPassword) => {
     return R.fail("此用户名已存在");
 
   password = crypto
-    .createHmac("md5", secretKey)
+    .createHmac("md5", PASSWORD_SECRETKEY)
     .update(password)
     .digest("hex");
 
@@ -52,21 +56,44 @@ const login = async (username, password) => {
     return R.fail("输入项为空");
 
   password = crypto
-    .createHmac("md5", secretKey)
+    .createHmac("md5", PASSWORD_SECRETKEY)
     .update(password)
     .digest("hex")
 
-  const user = await User.findOne({ where: { username, password } });
+  const user = await User.findOne({
+    where: { username, password }
+  });
   if (!user)
     return R.fail("用户名或密码错误");
 
+  // 获取jwt
+  const token = jwt.sign({
+    id: user.id,
+    username: user.username
+  }, JWT_SECRETKEY, {
+    expiresIn: 10 * 60 * 1
+  });
+
   return R.ok({
     message: "登录成功",
-    id: user.id
+    token
+  });
+};
+
+const getInfo = async id => {
+  const user = await User.findOne({
+    where: { id }
+  });
+  if (!user) return R.fail("token无效");
+
+  return R.ok({
+    id: user.id,
+    username: user.username
   });
 };
 
 module.exports = {
   register,
-  login
+  login,
+  getInfo
 };

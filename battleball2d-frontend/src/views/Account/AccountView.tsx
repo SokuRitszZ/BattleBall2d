@@ -1,19 +1,13 @@
-import React, {createRef, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import style from "./AccountView.module.scss";
 import {useNavigate} from "react-router-dom";
-import {loginApi, registerApi} from "../../script/api/user";
-import {unmountComponentAtNode} from "react-dom";
+import {getInfoApi, loginApi, registerApi} from "../../script/api/user";
+import User, {setToken, setInfo, UserInfo} from "../../store/user";
+import UserStore from "../../store/user";
 
 type PropType = {
 
-};
-
-async function login(
-  username: string,
-  password: string
-): Promise<void> {
-  console.log(username, password);
 };
 
 async function register(
@@ -24,17 +18,28 @@ async function register(
   console.log(username, password, confirmPassowrd);
 }
 
-function show(dom: any) {
-  console.log(dom);
-}
-
 function AccountView(props: PropType) {
+  const isHandling = useState<Boolean>(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token") as string);
+    isHandling[1](true);
+    getInfoApi()
+      .then((info: any) => {
+        setInfo(info);
+        isHandling[1](false);
+        navigate("/game");
+      })
+      .catch((error) => {
+        console.log("获取信息失败：token可能无效");
+        isHandling[1](false);
+      });
+  }, []);
+
   const $inputUsername = useRef<HTMLInputElement>(null);
   const $inputPassword = useRef<HTMLInputElement>(null);
   const $inputConfirmedPassword = useRef<HTMLInputElement>(null);
-  const navigate = useNavigate();
-
-  const isHandling = useState<Boolean>(false);
 
   const handleRegister = async () => {
     registerApi(
@@ -43,7 +48,6 @@ function AccountView(props: PropType) {
       $inputConfirmedPassword.current!.value
     ).then((data: any) => {
       if (data.result === "ok") {
-        console.log("注册成功！");
         handleLogin();
       } else {
         console.log(`注册失败：${data.reason}`);
@@ -58,11 +62,24 @@ function AccountView(props: PropType) {
     )
       .then((data: any) => {
         if (data.result === "ok") {
-          console.log("登陆成功！");
-          navigate("/game")
+          setToken(data.token);
+          return Promise.resolve();
         } else {
           console.log(`登陆失败：${data.reason}`);
+          return Promise.reject(data.reason);
         }
+      })
+      .then(() => {
+        return getInfoApi()
+      })
+      .then((info: any) => {
+        setInfo(info);
+        isHandling[1](false);
+        navigate("/game");
+      })
+      .catch(reason => {
+        console.log(`登陆失败：${reason}`);
+        isHandling[1](false);
       });
   };
 

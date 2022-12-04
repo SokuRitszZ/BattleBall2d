@@ -1,5 +1,5 @@
 const express = require("express");
-const {register, login} = require("../services/user");
+const {register, login, getInfo} = require("../services/user");
 const router = express.Router();
 
 router.get("/", (req, res) => {
@@ -19,5 +19,10 @@ router.get("/login", async (req, res) => {
   } = req.query;
   res.json(await login(username, password));
 });
+
+router.get("/getinfo", async (req, res) => {
+  const {id} = req.auth;
+  res.json(await getInfo(id));
+})
 
 module.exports = router;
