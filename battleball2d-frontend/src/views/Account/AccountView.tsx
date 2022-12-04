@@ -2,6 +2,8 @@ import React, {createRef, useRef, useState} from 'react';
 
 import style from "./AccountView.module.scss";
 import {useNavigate} from "react-router-dom";
+import {loginApi, registerApi} from "../../script/api/user";
+import {unmountComponentAtNode} from "react-dom";
 
 type PropType = {
 
@@ -35,27 +37,33 @@ function AccountView(props: PropType) {
   const isHandling = useState<Boolean>(false);
 
   const handleRegister = async () => {
-    register(
+    registerApi(
       $inputUsername.current!.value,
       $inputPassword.current!.value,
-      $inputConfirmedPassword.current!.value,
-    ).then(() => {
-      isHandling[1](true);
+      $inputConfirmedPassword.current!.value
+    ).then((data: any) => {
+      if (data.result === "ok") {
+        console.log("注册成功！");
+        handleLogin();
+      } else {
+        console.log(`注册失败：${data.reason}`);
+      }
     });
   };
 
   const handleLogin = async () => {
-    login(
+    loginApi(
       $inputUsername.current!.value,
       $inputPassword.current!.value
-    ).then(() => {
-      isHandling[1](true);
-      return new Promise(resolve => {
-        setTimeout(resolve, 1000);
+    )
+      .then((data: any) => {
+        if (data.result === "ok") {
+          console.log("登陆成功！");
+          navigate("/game")
+        } else {
+          console.log(`登陆失败：${data.reason}`);
+        }
       });
-    }).then(() => {
-      navigate("/game")
-    });
   };
 
   let inner;

@@ -10,7 +10,7 @@ function App() {
       </div>
       <div className="w-full text-center mt-5">
         <Link to="/account">
-          <button className="m-auto text-3xl p-4 bg-amber-600 rounded-2xl mt-2 text-gray-100 transition hover:bg-amber-700 active:bg-amber-800">START</button>
+          <button className="m-auto text-3xl p-2 bg-amber-600 rounded-xl mt-2 text-gray-100 transition hover:bg-amber-700 active:bg-amber-800">START</button>
         </Link>
       </div>
     </div>
