@@ -13,7 +13,7 @@ function GameView() {
       if ($canvas.current && $parent.current) {
         const game = new Game($parent.current, $canvas.current);
         game.addPlayer(UserStore.info, true);
-        game.start();
+        game.start("single");
       }
     });
 

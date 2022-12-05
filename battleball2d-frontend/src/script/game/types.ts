@@ -1,16 +1,27 @@
 import Player from "./player/Player";
 
-type GameMapConfig = {
+export type GameMapConfig = {
   widthRatio: number;
   heightRatio: number;
 };
 
-type SkillConfig = {
-  parent: Player
-  key: string
+export type ModeEnum = "unknown" | "single" | "multi";
+
+export type ParticleConfig = {
+  maxLen: number
+  maxTime: number
+  angle: number
+  maxRadius: number
+  color: string
 };
 
-type BallConfig = {
+export type SkillConfig = {
+  parent: Player
+  key: string
+  cd: number
+};
+
+export type BallConfig = {
   color?: string
   radius: number
   speed: number
@@ -18,12 +29,12 @@ type BallConfig = {
   parent: Player
 };
 
-type TypePosition = {
+export type TypePosition = {
   x: number
   y: number
 } | null;
 
-type PlayerConfig = {
+export type PlayerConfig = {
   maxHP: number
   headIcon: string
   radius: number
@@ -31,18 +42,9 @@ type PlayerConfig = {
   isOperated: Boolean
 };
 
-type CircleConfig = {
+export type CircleConfig = {
   config: {
     radius: number
   }
   position: TypePosition
-};
-
-export type {
-  TypePosition,
-  SkillConfig,
-  BallConfig,
-  GameMapConfig,
-  PlayerConfig,
-  CircleConfig
 };

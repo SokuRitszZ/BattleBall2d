@@ -4,7 +4,7 @@ import AccountView from "./Account/AccountView";
 import LobbyView from "./Lobby/LobbyView";
 import GameView from "./Game/GameView";
 import {ReactNode} from "react";
-import {checkIfCanLogin, isLogin} from "../store/user";
+import {checkIfCanLogin, getInfo, isLogin} from "../store/user";
 
 function AppRouter() {
   const location = useLocation();
@@ -43,15 +43,15 @@ function AppRouter() {
   const view = (param: any) => {
     return (
       param.map((item: RouterItem) => {
-        return (
-          <Route
-            path={item.path}
-            element={ item.auth && !isLogin() ? <Navigate to="/account" replace={true}/> : item.component }
-            key={item.path}
-          >
-            { item?.child && view(item.child) }
-          </Route>
-        )
+         return (
+           <Route
+             path={item.path}
+             element={item.auth && !isLogin() ? <Navigate to="/account" replace={true}/> : item.component}
+             key={item.path}
+           >
+             { item?.child && view(item.child) }
+           </Route>
+         )
       })
     );
   }

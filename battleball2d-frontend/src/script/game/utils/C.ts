@@ -20,6 +20,12 @@ class C {
   static isCollision(p: CircleConfig, q: CircleConfig) {
     return p.config.radius + q.config.radius > C.distance(p.position, q.position);
   }
+
+  static selectRandom<T>(list: T[]) {
+    const n = list.length;
+    const index = Math.floor(n * Math.random());
+    return list[index];
+  }
 }
 
 export default C;

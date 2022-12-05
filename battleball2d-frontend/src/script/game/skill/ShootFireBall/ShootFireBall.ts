@@ -14,8 +14,10 @@ class ShootFireBall extends Skill {
   }
 
   use(target: TypePosition): void {
+    if (!this.checkIfCanUse()) return ;
     const parent = this.config.parent;
     const root = parent.root;
+    this.setLastUsed(new Date());
 
     new FireBall(
       root,

@@ -17,10 +17,11 @@ class Player extends GameObject implements Collisionable {
   skills: Skill[] = [];
   HP: number;
 
-  private isAlive: Boolean = true;
+  protected isAlive: Boolean = true;
 
   constructor(root: Game, position: TypePosition, config: PlayerConfig) {
     super(root);
+    root.players.push(this);
 
     this.position = position;
     this.config = config;
@@ -39,6 +40,7 @@ class Player extends GameObject implements Collisionable {
   onStart() {
     /// test
     this.skills.push(new ShootFireBall({
+      cd: 3,
       key: "q",
       parent: this
     }))
@@ -53,6 +55,7 @@ class Player extends GameObject implements Collisionable {
   }
 
   onDestroy() {
+    this.root.players = this.root.players.filter(player => this !== player);
     this.isAlive = false;
   }
 
@@ -70,9 +73,27 @@ class Player extends GameObject implements Collisionable {
     }
   }
 
-  //MARK: Private Methods
+  //MARK: Protected Methods
 
-  private render() {
+  protected checkIsDied() {
+    if (this.HP <= 0) this.destroy();
+  }
+
+  protected checkAndMove() {
+    if (!this.moveTarget) return ;
+    const {speed} = this.config;
+    const distance = C.distance(this.position, this.moveTarget);
+    const angle = C.angle(this.position, this.moveTarget);
+    const moveDistance = Math.min(
+      speed * this.deltaTime,
+      distance
+    );
+    if (moveDistance === distance) this.moveTarget = null;
+    this.position!.x += moveDistance * Math.cos(angle);
+    this.position!.y += moveDistance * Math.sin(angle);
+  }
+
+  protected render() {
     const {headIcon, radius} = this.config;
     const {x, y} = this.position!;
     const scale = this.root.scale;
@@ -94,6 +115,8 @@ class Player extends GameObject implements Collisionable {
       });
     }
   }
+
+  //MARK: Private Methods
 
   private addEventListener() {
     if (!this.config.isOperated) return ;
@@ -129,25 +152,6 @@ class Player extends GameObject implements Collisionable {
       });
     });
   }
-
-  private checkAndMove() {
-    if (!this.moveTarget) return ;
-    const {speed} = this.config;
-    const distance = C.distance(this.position, this.moveTarget);
-    const angle = C.angle(this.position, this.moveTarget);
-    const moveDistance = Math.min(
-      speed * this.deltaTime,
-      distance
-    );
-    if (moveDistance === distance) this.moveTarget = null;
-    this.position!.x += moveDistance * Math.cos(angle);
-    this.position!.y += moveDistance * Math.sin(angle);
-  }
-
-  private checkIsDied() {
-    if (this.HP <= 0) this.destroy();
-  }
 }
-
 
 export default Player;

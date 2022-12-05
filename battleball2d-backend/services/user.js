@@ -71,7 +71,7 @@ const login = async (username, password) => {
     id: user.id,
     username: user.username
   }, JWT_SECRETKEY, {
-    expiresIn: 10 * 60 * 1
+    expiresIn: 14 * 24 * 60 * 60 * 1
   });
 
   return R.ok({
