@@ -3,9 +3,11 @@ import {getInfoApi} from "../script/api/user";
 const UserStore: {
   token: string
   info: UserInfo
+  status: "unlogin" | "logined"
 } = {
   token: "",
-  info: null
+  info: null,
+  status: "unlogin"
 };
 
 export type UserInfo = {
@@ -27,14 +29,24 @@ export function getInfo() {
   return getInfoApi()
     .then((info: any) => {
       setInfo(info);
-      return Promise.resolve();
+      UserStore.status = "logined";
+      return Promise.resolve(true);
     });
 }
 
 export async function logout() {
   setToken("");
   setInfo(null);
+  UserStore.status = "unlogin";
   return ;
+}
+
+export function isLogin() {
+  return UserStore.status === "logined";
+}
+
+export async function checkIfCanLogin() {
+  return await getInfo();
 }
 
 export default UserStore;

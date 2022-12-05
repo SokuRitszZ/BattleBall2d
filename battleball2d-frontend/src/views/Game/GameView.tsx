@@ -2,6 +2,7 @@ import React, {useRef} from 'react';
 
 import style from "./GameView.module.scss";
 import Game from "../../script/game/base/Game";
+import UserStore from "../../store/user";
 
 function GameView() {
   const $parent = useRef<HTMLDivElement>(null);
@@ -11,6 +12,7 @@ function GameView() {
     .then(() => {
       if ($canvas.current && $parent.current) {
         const game = new Game($parent.current, $canvas.current);
+        game.addPlayer(UserStore.info, true);
         game.start();
       }
     });

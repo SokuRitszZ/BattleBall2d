@@ -3,6 +3,7 @@ import GameMap from "../map/GameMap";
 import G from "../utils/G";
 import {GameMapConfig, TypePosition} from "../types";
 import Player from "../player/Player";
+import {UserInfo} from "../../../store/user";
 
 class Game {
   $parent: HTMLDivElement;
@@ -39,26 +40,9 @@ class Game {
 
     this.hasStarted = false;
 
-    new Player(this, {
-      x: this.screenConfig.widthRatio / 2,
-      y: this.screenConfig.heightRatio / 2
-    }, {
-      maxHP: 100,
-      headIcon: "https://cdn.acwing.com/media/user/profile/photo/69613_lg_73ca0939b2.jpg",
-      radius: 0.5,
-      speed: 1,
-      isOperated: true
-    });
-
-    new Player(this, {
-      x: this.screenConfig.widthRatio / 2,
-      y: this.screenConfig.heightRatio / 2
-    }, {
-      maxHP: 100,
-      headIcon: "3f7790",
-      radius: 0.5,
-      speed: 1,
-      isOperated: false
+    this.addPlayer({
+      id: 0, username: "",
+      headIcon: "357682"
     });
   }
 
@@ -68,6 +52,19 @@ class Game {
 
   removeObject(removedGameObject: GameObject) {
     this.gameObjects = this.gameObjects.filter(gameObject => gameObject !== removedGameObject);
+  }
+
+  addPlayer(user: UserInfo, isOperated?: boolean) {
+    new Player(this, {
+      x: this.screenConfig.widthRatio / 2,
+      y: this.screenConfig.heightRatio / 2
+    }, {
+      maxHP: 100,
+      headIcon: user!.headIcon,
+      radius: 0.5,
+      speed: 1,
+      isOperated: isOperated || false
+    });
   }
 
   start() {
@@ -100,10 +97,8 @@ class Game {
   private addEventListener() {
     // resize
     window.addEventListener("resize", () => {
-      Promise.resolve().then(() => {
-        this.resetScale();
-        this.resize();
-      });
+      this.resetScale();
+      this.resize();
     });
 
     // mousemove
