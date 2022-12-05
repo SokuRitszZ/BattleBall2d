@@ -1,11 +1,25 @@
 import Game from "../../../base/Game";
 import GameObject from "../../../base/GameObject";
-import {BallConfig, TypePosition} from "../../../types";
+import {TypePosition} from "../../../types";
 import G from "../../../utils/G";
+import Updater from "../../../updater/Updater";
+import DirectMoveUpdater from "../../../updater/move/DirectMoveUpdater";
+import Player from "../../../player/Player";
+
+export type BallConfig = {
+  color?: string
+  radius: number
+  speed: number
+  angle: number
+  parent: Player
+  maxLength: number
+  damage?: number
+};
 
 class Ball extends GameObject {
   config: BallConfig;
   position: TypePosition;
+  updaters: Updater[] = [];
 
   constructor(root: Game, position: TypePosition, config: BallConfig) {
     super(root);
@@ -14,8 +28,14 @@ class Ball extends GameObject {
     this.position = {...position} as TypePosition;
   }
 
+  onStart() {
+    this.updaters.push(new DirectMoveUpdater(this, {
+      angle: this.config.angle, speed: this.config.speed
+    }));
+  }
+
   update() {
-    this.move();
+    super.update();
     this.render()
   }
 
@@ -32,13 +52,6 @@ class Ball extends GameObject {
       radius: radius * scale,
       color: color || "#fff"
     });
-  }
-
-  private move() {
-    const {speed, angle} = this.config;
-    const moveDistance = speed * this.deltaTime;
-    this.position!.x += moveDistance * Math.cos(angle);
-    this.position!.y += moveDistance * Math.sin(angle);
   }
 }
 

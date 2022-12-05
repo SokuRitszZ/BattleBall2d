@@ -1,6 +1,6 @@
 interface Collisionable {
   checkAttacked(): void;
-  afterAttacked(): void;
+  afterAttacked(params?: any): void;
 }
 
 export default Collisionable;

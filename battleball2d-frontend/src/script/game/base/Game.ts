@@ -117,8 +117,8 @@ class Game {
   private addEventListener() {
     // resize
     setInterval(() => {
-      if (this.resetScale())
-        this.resize();
+      this.resetScale()
+      this.resize();
     }, 200);
 
     // mousemove
@@ -140,8 +140,8 @@ class Game {
     const height = window.innerHeight * 5 / 6;
     const {widthRatio, heightRatio} = this.screenConfig;
     const scale = Math.min(width / widthRatio, height / heightRatio);
-    rect.style.width = `${scale * widthRatio}px`;
-    rect.style.height = `${scale * heightRatio}px`;
+    rect.style.width = `${Math.floor(scale * widthRatio)}px`;
+    rect.style.height = `${Math.floor(scale * heightRatio)}px`;
   }
 
   private resetScale() {
@@ -150,14 +150,11 @@ class Game {
     c.canvas.width = rect.clientWidth;
     c.canvas.height = rect.clientHeight;
     const {width, height} = c.canvas;
-
     const scale = Math.min(
       width / this.screenConfig.widthRatio,
       height / this.screenConfig.heightRatio
     );
-    if (Math.abs(this.scale - scale) <= 0.01) return false;
     this.scale = scale;
-    return true;
   }
 }
 

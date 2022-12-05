@@ -1,9 +1,6 @@
 import Player from "./Player";
 import Game from "../base/Game";
 import {PlayerConfig, TypePosition} from "../types";
-import {Simulate} from "react-dom/test-utils";
-import play = Simulate.play;
-import player from "./Player";
 import C from "../utils/C";
 
 class AIPlayer extends Player {
@@ -30,6 +27,8 @@ class AIPlayer extends Player {
   }
 
   private autoUseSkills() {
+    const get = Math.floor(Math.random() * 100);
+    if (get > 3) return ;
     const player = C.selectRandom(this.root.players);
     if (player === this) return ;
     const skill = C.selectRandom(this.skills);

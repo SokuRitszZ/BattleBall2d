@@ -1,8 +1,8 @@
-import Skill from "../Skill";
-import {SkillConfig, TypePosition} from "../../types";
-import Ball from "../items/ball/Ball";
-import C from "../../utils/C";
-import FireBall from "../items/ball/FireBall";
+import Skill from "./Skill";
+import {SkillConfig, TypePosition} from "../types";
+import Ball from "./items/ball/Ball";
+import C from "../utils/C";
+import FireBall from "./items/ball/FireBall";
 
 class ShootFireBall extends Skill {
   damage: number;
@@ -22,9 +22,16 @@ class ShootFireBall extends Skill {
     new FireBall(
       root,
       parent,
-      parent.position!,
-      C.angle(parent.position!, target!),
-      this.damage
+      {...parent.position!},
+      {
+        angle: C.angle(parent.position, target),
+        damage: this.damage,
+        maxLength: 15,
+        parent,
+        radius: 0.15,
+        speed: 5,
+        color: "#e3ac72"
+      }
     );
   }
 }

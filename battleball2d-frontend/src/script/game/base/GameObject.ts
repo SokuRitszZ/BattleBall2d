@@ -1,10 +1,13 @@
 import Game from "./Game";
+import Updater from "../updater/Updater";
 
 class GameObject {
   root: Game;
   hasCreated: Boolean;
   hasStarted: Boolean;
   hasDestroyed: Boolean;
+
+  updaters: Updater[] = [];
 
   private trulyDeltaTime: number = 0;
 
@@ -74,7 +77,7 @@ class GameObject {
   }
 
   update(): void {
-
+    this.updaters.forEach(updater => updater.callback());
   }
 
   onDestroy(): void {

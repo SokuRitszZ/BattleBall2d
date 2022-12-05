@@ -7,27 +7,12 @@ export type GameMapConfig = {
 
 export type ModeEnum = "unknown" | "single" | "multi";
 
-export type ParticleConfig = {
-  maxLen: number
-  maxTime: number
-  angle: number
-  maxRadius: number
-  color: string
-};
-
 export type SkillConfig = {
   parent: Player
   key: string
   cd: number
 };
 
-export type BallConfig = {
-  color?: string
-  radius: number
-  speed: number
-  angle: number
-  parent: Player
-};
 
 export type TypePosition = {
   x: number

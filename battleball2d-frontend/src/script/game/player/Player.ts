@@ -4,8 +4,10 @@ import C from "../utils/C";
 import G from "../utils/G";
 import {PlayerConfig, TypePosition} from "../types";
 import Skill from "../skill/Skill";
-import ShootFireBall from "../skill/ShootFireBall/ShootFireBall";
-import Collisionable from "../skill/interfaces";
+import ShootFireBall from "../skill/ShootFireBall";
+import Collisionable from "../interfaces";
+import TargetMoveUpdater from "../updater/move/TargetMoveUpdater";
+import ZoomUpdater from "../updater/effect/ZoomUpdater";
 
 class Player extends GameObject implements Collisionable {
   config: PlayerConfig
@@ -38,18 +40,21 @@ class Player extends GameObject implements Collisionable {
   afterAttacked(): void {}
 
   onStart() {
-    /// test
+    /// skill
     this.skills.push(new ShootFireBall({
       cd: 3,
       key: "q",
       parent: this
     }))
 
+    /// updater
+    this.updaters.push(new TargetMoveUpdater(this, this.config.speed));
+
     this.addEventListener();
   }
 
   update() {
-    this.checkAndMove();
+    super.update();
     this.render();
     this.checkIsDied();
   }
@@ -76,21 +81,16 @@ class Player extends GameObject implements Collisionable {
   //MARK: Protected Methods
 
   protected checkIsDied() {
-    if (this.HP <= 0) this.destroy();
-  }
-
-  protected checkAndMove() {
-    if (!this.moveTarget) return ;
-    const {speed} = this.config;
-    const distance = C.distance(this.position, this.moveTarget);
-    const angle = C.angle(this.position, this.moveTarget);
-    const moveDistance = Math.min(
-      speed * this.deltaTime,
-      distance
-    );
-    if (moveDistance === distance) this.moveTarget = null;
-    this.position!.x += moveDistance * Math.cos(angle);
-    this.position!.y += moveDistance * Math.sin(angle);
+    if (this.HP <= 0 && this.isAlive) {
+      this.isAlive = false;
+      const vRadius = this.config.radius / 0.5;
+      this.updaters.push(new ZoomUpdater(this, 0.5, radius => {
+        return Math.max(0, radius - vRadius * this.deltaTime);
+      }));
+      setTimeout(() => {
+        this.destroy();
+      }, 500);
+    }
   }
 
   protected render() {
