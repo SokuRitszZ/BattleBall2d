@@ -5,22 +5,21 @@ import LobbyView from "./Lobby/LobbyView";
 import GameView from "./Game/GameView";
 import {ReactNode} from "react";
 import {isLogin} from "../store/user";
+import SettingsView from "./Lobby/SettingsView";
+import EnterView from "./EnterView";
 
 function AppRouter() {
-  const location = useLocation();
-
   type RouterItem = {
     path: string
     auth: boolean
     component: ReactNode
     child?: RouterItem[]
   };
-
   const routes: RouterItem[] = [
     {
       path: "/",
       auth: false,
-      component: <App/>
+      component: <EnterView/>
     },
     {
       path: "/account",
@@ -30,7 +29,14 @@ function AppRouter() {
     {
       path: "/lobby",
       auth: true,
-      component: <LobbyView/>
+      component: <LobbyView/>,
+      child: [
+        {
+          path: "/lobby/settings",
+          auth: true,
+          component: <SettingsView/>
+        }
+      ]
     },
     {
       path: "/game",

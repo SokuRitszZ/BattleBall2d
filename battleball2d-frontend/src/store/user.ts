@@ -1,12 +1,18 @@
 import {getInfoApi} from "../script/api/user";
 
+const initInfo: UserInfo = {
+  id: -1,
+  username: "",
+  headIcon: ""
+};
+
 const UserStore: {
   token: string
   info: UserInfo
   status: "unlogin" | "logined"
 } = {
   token: "",
-  info: null,
+  info: initInfo,
   status: "unlogin"
 };
 
@@ -14,7 +20,7 @@ export type UserInfo = {
   id: number
   username: string
   headIcon: string
-} | null;
+};
 
 export function setToken(token: string) {
   UserStore.token = token;
@@ -26,6 +32,8 @@ export function setInfo(info: UserInfo) {
 }
 
 export function getInfo() {
+  setToken(localStorage.getItem("token")!);
+  console.log(UserStore.token);
   return getInfoApi()
     .then((info: any) => {
       setInfo(info);
@@ -36,7 +44,7 @@ export function getInfo() {
 
 export async function logout() {
   setToken("");
-  setInfo(null);
+  setInfo(initInfo);
   UserStore.status = "unlogin";
   return ;
 }
