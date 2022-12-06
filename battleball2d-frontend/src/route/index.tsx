@@ -2,7 +2,7 @@ import {RouteProps} from "react-router-dom";
 import AccountView from "../views/Account/AccountView";
 import LobbyView from "../views/Lobby/LobbyView";
 import GameView from "../views/Game/GameView";
-import SettingsView from "../views/Lobby/SettingsView";
+import SettingsView from "../views/Lobby/Settings/SettingsView";
 import EnterView from "../views/EnterView";
 
 const routes: any[] = [

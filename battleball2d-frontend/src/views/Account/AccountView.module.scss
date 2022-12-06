@@ -8,13 +8,16 @@ $view-height: 400px;
 }
 
 .frame {
-  @apply h-full w-full p-10;
+  @apply w-full p-10;
   label, input {
     display: block;
     @apply m-2;
   }
   label {
-    @apply pl-1 text-gray-500 mb-0;
+    @apply
+      pl-1
+      text-gray-500
+      mb-0;
   }
   input {
     @apply w-full p-2 rounded-xl border-2 border-gray-200 mb-4 mt-0;

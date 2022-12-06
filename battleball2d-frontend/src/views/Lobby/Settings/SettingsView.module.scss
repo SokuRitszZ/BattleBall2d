@@ -1,0 +1,41 @@
+.frame {
+  @apply
+    w-fit
+    h-full
+    bg-gray-50
+    rounded-2xl
+    p-4;
+
+  img {
+    width: 10rem;
+  }
+
+  label {
+    font-size: 20px;
+    @apply
+      font-bold
+      block
+      mt-3;
+  }
+
+  input {
+    max-width: 70%;
+    width: 20rem;
+    height: 3rem;
+    font-size: 24px;
+    @apply
+      border-2
+      p-2
+      rounded-xl;
+  }
+}
+
+.imgFrame {
+  @apply
+    border-2
+    border-gray-300
+    rounded-xl
+    border-dashed
+    p-2
+    w-fit;
+}

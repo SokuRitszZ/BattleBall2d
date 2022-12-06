@@ -3,26 +3,25 @@ import React, {useEffect, useRef} from 'react';
 import style from "./GameView.module.scss";
 import Game from "../../script/game/base/Game";
 import UserStore from "../../store/user";
+import useAuth from "../../useAuth";
+import {useNavigate} from "react-router-dom";
 
 function GameView() {
   const $parent = useRef<HTMLDivElement>(null);
   const $canvas = useRef<HTMLCanvasElement>(null);
   let game: Game;
-
+  const navigate = useNavigate();
   useEffect(() => {
+    useAuth(navigate)
+      .then(() => {
+        game = new Game($parent.current!, $canvas.current!);
+        game.addPlayer(UserStore.info, true);
+        game.start("single");
+      });
     return () => {
       game.stop();
     };
   }, []);
-
-  Promise.resolve()
-    .then(() => {
-      if ($canvas.current && $parent.current) {
-        game = new Game($parent.current, $canvas.current);
-        game.addPlayer(UserStore.info, true);
-        game.start("single");
-      }
-    });
 
   return (
     <div ref={$parent} className={style.frame}>

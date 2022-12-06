@@ -5,7 +5,7 @@ import LobbyView from "./Lobby/LobbyView";
 import GameView from "./Game/GameView";
 import {ReactNode} from "react";
 import {isLogin} from "../store/user";
-import SettingsView from "./Lobby/SettingsView";
+import SettingsView from "./Lobby/Settings/SettingsView";
 import EnterView from "./EnterView";
 
 function AppRouter() {

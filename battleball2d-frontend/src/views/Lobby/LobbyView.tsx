@@ -1,18 +1,23 @@
 import React, {useEffect, useRef, useState} from 'react';
 
 import style from "./LobbyView.module.scss";
-import {Link, Outlet, useNavigate} from "react-router-dom";
-import {logout, UserInfo} from "../../store/user";
+import {Link, Outlet, useLocation, useNavigate} from "react-router-dom";
+import UserStore, {logout, UserInfo} from "../../store/user";
 import useAuth from "../../useAuth";
 
 function LobbyView() {
-  const $frame = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const $frame = useRef<HTMLDivElement>(null);
   const info = useState<UserInfo>({
     headIcon: "", id: 0, username: ""
   });
   useEffect(() => {
-    useAuth(navigate, info);
+    useAuth(navigate)
+      .then(() => {
+        info[1](UserStore.info);
+      });
   }, []);
 
   const getCurrent = () => {
@@ -29,7 +34,13 @@ function LobbyView() {
 
   const handleMultiMode = () => {
 
-  }
+  };
+
+  const handleSettings = () => {
+    if (location.pathname === "/lobby/settings") navigate(-1);
+    else navigate("/lobby/settings");
+  };
+
 
   const handleLogout = () => {
     logout()
@@ -48,7 +59,7 @@ function LobbyView() {
         <div className={style.left}>
           <div className={style.button} onClick={handleSingleMode}>单人游戏</div>
           <div className={style.button} onClick={handleMultiMode}>多人游戏</div>
-          <Link to="/lobby/settings" className={style.button}>账号设置</Link>
+          <div className={style.button} onClick={handleSettings}>账号设置</div>
           <div className={style.button} onClick={handleLogout}>退出账号</div>
         </div>
         <div className={style.right}>

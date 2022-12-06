@@ -1,15 +1,13 @@
 import {NavigateFunction, useNavigate} from "react-router-dom";
-import UserStore, {getInfo, isLogin, UserInfo} from "./store/user";
+import {getInfo, isLogin} from "./store/user";
 
-function useAuth(navigate: NavigateFunction, info: [UserInfo, ((value: (((prevState: UserInfo) => UserInfo) | UserInfo)) => void)]) {
+function useAuth(navigate: NavigateFunction) {
   if (!isLogin())
-    getInfo()
-      .then(() => {
-        if (info) info[1](UserStore.info);
-      })
+    return getInfo()
       .catch(() => {
         navigate("/account");
       });
+  return Promise.resolve();
 };
 
 export default useAuth;

@@ -22,6 +22,12 @@ export type UserInfo = {
   headIcon: string
 };
 
+let resolveLogined: (...args: any) => void, rejectLogined: (...args: any) => void;
+export let hasLogined = new Promise((resolve, reject) => {
+  resolveLogined = resolve;
+  rejectLogined = reject;
+});
+
 export function setToken(token: string) {
   UserStore.token = token;
   localStorage.setItem("token", token);
@@ -33,12 +39,19 @@ export function setInfo(info: UserInfo) {
 
 export function getInfo() {
   setToken(localStorage.getItem("token")!);
-  console.log(UserStore.token);
+  hasLogined = new Promise((resolve, reject) => {
+    resolveLogined = resolve;
+    rejectLogined = reject;
+  });
   return getInfoApi()
     .then((info: any) => {
       setInfo(info);
       UserStore.status = "logined";
+      resolveLogined();
       return Promise.resolve(true);
+    })
+    .catch(() => {
+      rejectLogined();
     });
 }
 
