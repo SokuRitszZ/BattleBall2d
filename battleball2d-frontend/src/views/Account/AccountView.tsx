@@ -2,10 +2,8 @@ import React, {useEffect, useRef, useState} from 'react';
 
 import style from "./AccountView.module.scss";
 import {useNavigate} from "react-router-dom";
-import {getInfoApi, loginApi, registerApi} from "../../script/api/user";
-import User, {setToken, setInfo, UserInfo, getInfo} from "../../store/user";
-import UserStore from "../../store/user";
-import {catchRejection} from "@reduxjs/toolkit/dist/listenerMiddleware/utils";
+import {loginApi, registerApi} from "../../script/api/user";
+import {setToken, getInfo} from "../../store/user";
 
 type PropType = {
 
@@ -16,6 +14,7 @@ function AccountView(props: PropType) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!localStorage.getItem("token")) return ;
     setToken(localStorage.getItem("token") as string);
     isHandling[1](true);
     getInfo()

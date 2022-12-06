@@ -8,7 +8,6 @@ const api = axios.create({
 api.interceptors.response.use(res => {
   return res.data;
 }, err => {
-  if (!err) return Promise.reject("无法连接服务器");
   return Promise.reject(err);
 });
 
@@ -20,7 +19,6 @@ api.interceptors.request.use(req => {
   };
   return req;
 }, err => {
-  if (!err) return Promise.reject("无法连接服务器");
   return Promise.reject(err);
 });
 

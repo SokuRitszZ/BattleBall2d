@@ -4,11 +4,10 @@ import AccountView from "./Account/AccountView";
 import LobbyView from "./Lobby/LobbyView";
 import GameView from "./Game/GameView";
 import {ReactNode} from "react";
-import {checkIfCanLogin, getInfo, isLogin} from "../store/user";
+import {isLogin} from "../store/user";
 
 function AppRouter() {
   const location = useLocation();
-  const {pathname} = location;
 
   type RouterItem = {
     path: string

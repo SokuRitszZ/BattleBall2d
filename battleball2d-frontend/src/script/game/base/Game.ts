@@ -5,6 +5,7 @@ import {GameMapConfig, ModeEnum, PlayerConfig, TypePosition} from "../types";
 import Player from "../player/Player";
 import {UserInfo} from "../../../store/user";
 import AIPlayer from "../player/AIPlayer";
+import gameObject from "./GameObject";
 
 class Game {
   $parent: HTMLDivElement;
@@ -14,12 +15,16 @@ class Game {
   screenConfig: GameMapConfig;
   gameMap: GameMap;
   scale: number = 0;
+  engine: number = -1;
 
   hasStarted: Boolean;
 
   lastTimeStep: number = 0;
   cursorPosition: TypePosition = null;
   mode: ModeEnum = "unknown";
+  resizeInterval: NodeJS.Timer | null = null;
+
+  private handlers: any[] = [];
 
   constructor($parent: HTMLDivElement, $canvas: HTMLCanvasElement) {
     this.$parent = $parent;
@@ -40,7 +45,6 @@ class Game {
     this.initEventListener();
 
     this.hasStarted = false;
-
   }
 
   addObject(gameObject: GameObject) {
@@ -102,9 +106,15 @@ class Game {
         }
       });
       this.lastTimeStep = lastTimeStep;
-      requestAnimationFrame(engine);
+      window.requestAnimationFrame(engine);
     };
-    requestAnimationFrame(engine);
+    this.engine = window.requestAnimationFrame(engine);
+  }
+
+  stop() {
+    this.gameObjects.forEach(gameObject => gameObject.destroy());
+    window.cancelAnimationFrame(this.engine);
+    window.clearInterval(this.resizeInterval!);
   }
 
   // @MARK: Private Methods
@@ -116,17 +126,20 @@ class Game {
 
   private addEventListener() {
     // resize
-    setInterval(() => {
+    this.resizeInterval = setInterval(() => {
       this.resetScale()
       this.resize();
     }, 200);
 
     // mousemove
-    this.$canvas.addEventListener("mousemove", e => {
+    this.handlers.push([this.$canvas, "mousemove", (e: MouseEvent) => {
       this.cursorPosition = {
         x: e.offsetX / this.scale,
         y: e.offsetY / this.scale
       }
+    }]);
+    this.handlers.forEach(([target, type, event]) => {
+      target.addEventListener(type, event);
     });
   }
 

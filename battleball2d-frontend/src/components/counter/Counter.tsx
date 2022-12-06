@@ -1,16 +1,14 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks";
 import {decrement, increment} from "../../redux/counterSlice";
 
 function Counter() {
-  const count = useAppSelector(state => state.counterReducer.value);
-  const dispatch = useAppDispatch();
+  const count = useState<number>(0);
 
   return (
     <div>
-      <h1>{count}</h1>
-      <button onClick={() => dispatch(increment())}>+</button>
-      <button onClick={() => dispatch(decrement())}>-</button>
+      <h1>{count[0]}</h1>
+      <button onClick={() => count[1](count[0] + 1)}>Click +1.</button>
     </div>
   );
 }

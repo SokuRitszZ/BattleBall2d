@@ -21,6 +21,8 @@ class Player extends GameObject implements Collisionable {
 
   protected isAlive: Boolean = true;
 
+  private handlers: any[] = [];
+
   constructor(root: Game, position: TypePosition, config: PlayerConfig) {
     super(root);
     root.players.push(this);
@@ -62,6 +64,10 @@ class Player extends GameObject implements Collisionable {
   onDestroy() {
     this.root.players = this.root.players.filter(player => this !== player);
     this.isAlive = false;
+
+    this.handlers.forEach(([target, type, event]) => {
+      target.removeEventListener(type, event);
+    });
   }
 
   //MARK: Public Methods
@@ -121,7 +127,7 @@ class Player extends GameObject implements Collisionable {
   private addEventListener() {
     if (!this.config.isOperated) return ;
     // mousedown
-    this.root.$canvas.addEventListener("mousedown", e => {
+    this.handlers.push([this.root.$canvas, "mousedown", (e: MouseEvent) => {
       if (!this.isAlive) return ;
       switch (e.button) {
         case 0:
@@ -140,16 +146,19 @@ class Player extends GameObject implements Collisionable {
           // 默认
           break;
       }
-    });
-
+    }])
     /// keyup
-    window.addEventListener("keyup", e => {
+    this.handlers.push([window, "keyup", (e: KeyboardEvent) => {
       this.skills.forEach(skill => {
         if (!this.isAlive) return ;
         if (skill.checkIfUse(e.key)) {
           skill.use(this.root.cursorPosition);
         }
       });
+    }]);
+
+    this.handlers.forEach(([target, type, event]) => {
+      target.addEventListener(type, event);
     });
   }
 }
