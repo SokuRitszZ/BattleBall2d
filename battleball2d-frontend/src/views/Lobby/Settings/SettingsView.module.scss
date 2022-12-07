@@ -1,4 +1,7 @@
+@import "../GlobalChat/GlobalChatView.module.scss";
+
 .frame {
+  animation: fadeRight 0.5s;
   @apply
     w-fit
     h-full

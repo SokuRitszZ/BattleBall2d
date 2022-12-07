@@ -33,7 +33,6 @@ server.use((err, req, res, next) => {
     res.status(401).send("Invalid token.");
   }
 });
-
 /// middlewares end
 
 /// routes
@@ -47,6 +46,9 @@ router.use("/user", userController);
 /// routes end
 
 server.use("/api", router);
+
+/// websocket
+require("./websocket/Websocket");
 
 server.listen(port, async () => {
   console.log(`battleball-2d backend listening at http://localhost:${port}...`);

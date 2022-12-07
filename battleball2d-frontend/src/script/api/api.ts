@@ -1,8 +1,10 @@
 import axios from "axios";
 import UserStore from "../../store/user";
 
+import {host} from "../../../config.json";
+
 const api = axios.create({
-  baseURL: "http://192.168.0.102:8080/api"
+  baseURL: `http://${host}:8080/api`
 });
 
 api.interceptors.response.use(res => {

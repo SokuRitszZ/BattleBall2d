@@ -43,6 +43,7 @@
 }
 
 .right {
+  animation: fadeRight 0.5s;
   @apply
     col-span-3
 }
@@ -65,3 +66,4 @@
   hover:shadow-2xl
   active:shadow
 }
+
