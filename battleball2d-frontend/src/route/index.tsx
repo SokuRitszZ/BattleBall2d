@@ -4,6 +4,7 @@ import LobbyView from "../views/Lobby/LobbyView";
 import GameView from "../views/Game/GameView";
 import SettingsView from "../views/Lobby/Settings/SettingsView";
 import EnterView from "../views/EnterView";
+import GlobalChatView from "../views/Lobby/GlobalChat/GlobalChatView";
 
 const routes: any[] = [
   {
@@ -17,17 +18,19 @@ const routes: any[] = [
   {
     path: "/lobby",
     element: <LobbyView/>,
-    auth: true,
     children: [
       {
         path: "settings",
         element: <SettingsView/>
+      },
+      {
+        path: "globalchat",
+        element: <GlobalChatView/>
       }
     ]
   },
   {
     path: "/game",
-    auth: true,
     element: <GameView/>,
   }
 ];

@@ -5,9 +5,6 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    screens: {
-      "phone": "480px"
-    },
     // height: {
     //   // sm: '8px',
     //   // md: '16px',
