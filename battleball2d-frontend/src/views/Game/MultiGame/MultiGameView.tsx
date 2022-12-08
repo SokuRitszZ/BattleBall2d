@@ -2,22 +2,22 @@ import React, {useEffect, useRef} from 'react';
 
 import style from "./MultiGameView.module.scss";
 import Game from "../../../script/game/base/Game";
-import UserStore from "../../../store/user";
-import useAuth from "../../../useAuth";
-import {useNavigate} from "react-router-dom";
+import {useLocation} from "react-router-dom";
+import UserStore, {UserInfo} from "../../../store/user";
 
 function MultiGameView() {
   const $parent = useRef<HTMLDivElement>(null);
   const $canvas = useRef<HTMLCanvasElement>(null);
   let game: Game;
-  const navigate = useNavigate();
+  const location = useLocation();
   useEffect(() => {
-    useAuth(navigate)
-      .then(() => {
-        game = new Game($parent.current!, $canvas.current!);
-        game.addPlayer(UserStore.info, true);
-        game.start("single");
-      });
+    game = new Game($parent.current!, $canvas.current!);
+    const {players} = location.state;
+    players.forEach((player: UserInfo) => {
+      game.addPlayer(player, player.id === UserStore.info.id, false);
+    });
+    // game.addPlayer(UserStore.info, true);
+    game.start("multi");
     return () => {
       game.stop();
     };

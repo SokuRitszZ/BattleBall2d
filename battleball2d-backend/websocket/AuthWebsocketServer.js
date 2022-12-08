@@ -17,7 +17,7 @@ class AuthWebsocketServer {
       .then(user => {
         this.user = user.toJSON();
         this.onStart();
-        return Promise.resolve();
+        return ;
       });
   }
 

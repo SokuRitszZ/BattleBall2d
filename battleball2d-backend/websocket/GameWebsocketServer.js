@@ -4,6 +4,7 @@ const AuthWebsocketServer = require("./AuthWebsocketServer");
 class GameWebsocketServer extends AuthWebsocketServer {
   static Rooms = new Map();
 
+  nanoid = nanoid(16);
   roomId = "";
   isOk = false;
   gameRoom = [];
@@ -53,10 +54,17 @@ class GameWebsocketServer extends AuthWebsocketServer {
       case "prepare":
         this.prepare();
         break;
+      case "play":
+        this.play(data);
+        break;
       default:
-        console.log(`未知事件：${data.action}`);
+        console.log(`未知动作：${data.action}`);
         break;
     }
+  }
+
+  play(data) {
+    this.broadCast(data);
   }
 
   getRoom(roomId) {
@@ -64,22 +72,25 @@ class GameWebsocketServer extends AuthWebsocketServer {
   }
 
   toJoin(roomId) {
-    roomId = roomId.trim();
-    if (roomId && roomId === this.roomId) return ;
-    if (!roomId) {
-      const roomIds = [...GameWebsocketServer.Rooms.keys()].filter(roomId => {
-        const room = this.getRoom(roomId);
-        return !~room.indexOf(this) && room.length < 3;
+    this.promiseGetUser
+      .then(() => {
+        roomId = roomId.trim();
+        if (roomId && roomId === this.roomId) return ;
+        if (!roomId) {
+          const roomIds = [...GameWebsocketServer.Rooms.keys()].filter(roomId => {
+            const room = this.getRoom(roomId);
+            return !~room.indexOf(this) && room.length < 3;
+          });
+          if (roomIds.length) roomId = roomIds[Math.floor(Math.random() * roomIds.length)];
+          else roomId = GameWebsocketServer.getNewRoomId();
+        }
+        if (!GameWebsocketServer.Rooms.has(roomId)) GameWebsocketServer.Rooms.set(roomId, []);
+        this.join(roomId);
       });
-      if (roomIds.length) roomId = roomIds[Math.floor(Math.random() * roomIds.length)];
-      else roomId = GameWebsocketServer.getNewRoomId();
-    }
-    if (!GameWebsocketServer.Rooms.has(roomId)) GameWebsocketServer.Rooms.set(roomId, []);
-    this.join(roomId);
   }
 
   join(roomId) {
-    this.user = {...this.user, isOk: false};
+    this.user = {...this.user, isOk: false, nanoid: this.nanoid};
     if (this.roomId !== "") this.exit();
     this.promiseGetUser
       .then(() => {

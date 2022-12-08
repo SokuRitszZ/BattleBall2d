@@ -2,6 +2,7 @@ import AccountView from "../views/Account/AccountView";
 import LobbyView from "../views/Lobby/LobbyView";
 import SingleGameView from "../views/Game/SingleGame/SingleGameView";
 import EnterView from "../views/EnterView";
+import MultiGameView from "../views/Game/MultiGame/MultiGameView";
 
 const routes: any[] = [
   {
@@ -19,6 +20,10 @@ const routes: any[] = [
   {
     path: "/singlegame",
     element: <SingleGameView/>,
+  },
+  {
+    path: "/multigame",
+    element: <MultiGameView/>
   }
 ];
 

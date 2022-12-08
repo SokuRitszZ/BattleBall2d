@@ -44,7 +44,7 @@ function PrepareGameView(props: PrepareGameProps) {
     if (id !== UserStore.info.id) return ;
     pubsub.publish(tagGame, {
       action: "prepare"
-    })
+    });
   }
 
   return (
@@ -53,6 +53,7 @@ function PrepareGameView(props: PrepareGameProps) {
         准备开始多人运动
       </div>
       <div className={style.tip}>请输入房间号加入，或者不输入而随机加入</div>
+      <div className={style.tip}>点击自己的头像来准备或取消准备</div>
       <div className={style.body}>
         <input onChange={handleChange} ref={$input} type="text"/>
         <button onClick={handleJoin}>{textInButton[0]}</button>

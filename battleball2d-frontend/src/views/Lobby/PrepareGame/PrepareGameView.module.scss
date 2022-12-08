@@ -61,3 +61,18 @@
 .active {
   @apply bg-green-400
 }
+
+@keyframes visible {
+  from {
+    max-width: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+  }
+  to {
+    max-width: 100px;
+    max-heigth: 120px;
+    overflow: hidden;
+    opacity: 1;
+  }
+}

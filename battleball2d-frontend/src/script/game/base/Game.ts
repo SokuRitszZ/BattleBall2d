@@ -1,10 +1,15 @@
-import GameObject from "./GameObject";
+import GameObject, {tagMultiGameAct} from "./GameObject";
 import GameMap from "../map/GameMap";
 import G from "../utils/G";
-import {GameMapConfig, ModeEnum, PlayerConfig, TypePosition} from "../types";
+import {GameMapConfig, ModeEnum, TypePosition} from "../types";
 import Player from "../player/Player";
 import {UserInfo} from "../../../store/user";
 import AIPlayer from "../player/AIPlayer";
+import pubsub from "pubsub-js";
+import {sendMessage} from "../../../store/websocket";
+
+export const tagSendAct = "tagSendAct";
+export const tagReceiveAct = "tagReceivedAct";
 
 class Game {
   $parent: HTMLDivElement;
@@ -54,8 +59,8 @@ class Game {
     this.gameObjects = this.gameObjects.filter(gameObject => gameObject !== removedGameObject);
   }
 
-  addPlayer(user: UserInfo, isOperated?: boolean) {
-    if (!isOperated) {
+  addPlayer(user: UserInfo, isOperated?: boolean, isAI?: boolean) {
+    if (isAI) {
       new AIPlayer(this, {
         x: this.screenConfig.widthRatio / 2,
         y: this.screenConfig.heightRatio / 2
@@ -67,7 +72,7 @@ class Game {
         isOperated: false
       });
     } else {
-      new Player(this, {
+      const player = new Player(this, {
         x: this.screenConfig.widthRatio / 2,
         y: this.screenConfig.heightRatio / 2
       }, {
@@ -77,6 +82,7 @@ class Game {
         speed: 1,
         isOperated: isOperated || false
       });
+      if (user.nanoid) player.nanoid = user.nanoid;
     }
   }
 
@@ -90,10 +96,23 @@ class Game {
       for (let i = 0; i < 5; ++i) {
         this.addPlayer({
           id: 0, username: "",
-          headIcon: "357682"
-        });
+          headIcon: G.randomPicUrl()
+        }, false, true);
       }
     }
+
+    pubsub.subscribe(tagSendAct, (tg, data) => {
+      const {callback} = data;
+      if (this.mode === "multi")
+        sendMessage({
+          service: "game",
+          data
+        });
+      else callback();
+    });
+    pubsub.subscribe(tagReceiveAct, (tg, data) => {
+      this.findAndAct(data.nanoid, data.act, data.args);
+    });
 
     const engine = (lastTimeStep: number) => {
       this.gameObjects.forEach(gameObject => {
@@ -110,7 +129,16 @@ class Game {
     this.engine = window.requestAnimationFrame(engine);
   }
 
+  findAndAct(nanoid: string, act: string, args: any[]) {
+    const obj: any = this.gameObjects.filter(gameObject => gameObject.nanoid === nanoid)[0];
+    try {
+      obj[act](...args, false);
+    } catch (e) {}
+  }
+
   stop() {
+    pubsub.unsubscribe(tagSendAct);
+    pubsub.unsubscribe(tagReceiveAct);
     this.gameObjects.forEach(gameObject => gameObject.destroy());
     window.cancelAnimationFrame(this.engine);
     window.clearInterval(this.resizeInterval!);

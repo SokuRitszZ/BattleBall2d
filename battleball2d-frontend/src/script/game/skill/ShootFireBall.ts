@@ -13,7 +13,7 @@ class ShootFireBall extends Skill {
     this.damage = damage || 9;
   }
 
-  use(target: TypePosition): void {
+  use(target: TypePosition) {
     if (!this.checkIfCanUse()) return ;
     const parent = this.config.parent;
     const root = parent.root;

@@ -10,7 +10,10 @@ import pubsub from "pubsub-js";
 
 import {host} from "../../../config.json";
 import PrepareGameView, {PrepareGameProps} from "./PrepareGame/PrepareGameView";
-import {connect, sendMessage} from "../../store/websocket";
+import WebSocketStore, {connect, sendMessage} from "../../store/websocket";
+import Player from "../../script/game/player/Player";
+import {tagMultiGameAct} from "../../script/game/base/GameObject";
+import {tagReceiveAct} from "../../script/game/base/Game";
 
 export const tagSendText = "tagSendText";
 export const tagGame = "tagGame";
@@ -30,6 +33,8 @@ function LobbyView() {
     players: [], roomId: "未加入房间"
   });
 
+  let players: UserInfo[] = [];
+
   useEffect(() => {
     pubsub.subscribe(tagSendText, (tg, text) => {
       sendMessage({
@@ -48,24 +53,26 @@ function LobbyView() {
     useAuth(navigate)
       .then(() => {
         info[1](UserStore.info);
-        connect(`${host}:3000`, (messageEvent?: MessageEvent) => {
-          if (!messageEvent) return () => {
-            console.log("close websocket");
-          }
-          const message = JSON.parse(messageEvent.data);
-          const data = message.data;
-          switch (message.service) {
-            case "chat":
-              handleChat(data);
-              break;
-            case "game":
-              handleGame(data);
-              break;
-            default:
-              break;
-          }
-          canUseSubview[1](true);
-        });
+        if (!WebSocketStore.websocket) {
+          connect(`${host}:3000`, (messageEvent?: MessageEvent) => {
+            if (!messageEvent) return () => {
+              console.log("close websocket");
+            }
+            const message = JSON.parse(messageEvent.data);
+            const data = message.data;
+            switch (message.service) {
+              case "chat":
+                handleChat(data);
+                break;
+              case "game":
+                handleGame(data);
+                break;
+              default:
+                break;
+            }
+          });
+        }
+        canUseSubview[1](true);
       });
     return () => {
       pubsub.unsubscribe(tagSendText);
@@ -106,6 +113,7 @@ function LobbyView() {
   const handleGame = (data: any) => {
     switch (data.action) {
       case "member":
+        players = [...data.members];
         pgProps[1](state => {
           return {
             roomId: data.roomId,
@@ -129,10 +137,24 @@ function LobbyView() {
           return pre;
         });
         break;
+      case "start":
+        navigate("/multigame", {
+          state: {
+            players
+          }
+        });
+        break;
+      case "play":
+        pubsub.publish(tagReceiveAct, data);
+        break;
       default:
         console.log(`未知动作：${data.action}`);
         break;
     }
+  };
+
+  const handleInGame = (data: any) => {
+    pubsub.publish(tagMultiGameAct, data);
   };
 
   const handleSingleMode = () => {

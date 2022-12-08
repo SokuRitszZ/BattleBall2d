@@ -1,5 +1,5 @@
 import GameObject from "../base/GameObject";
-import Game from "../base/Game";
+import Game, {tagSendAct} from "../base/Game";
 import C from "../utils/C";
 import G from "../utils/G";
 import {PlayerConfig, TypePosition} from "../types";
@@ -8,6 +8,7 @@ import ShootFireBall from "../skill/ShootFireBall";
 import Collisionable from "../interfaces";
 import TargetMoveUpdater from "../updater/move/TargetMoveUpdater";
 import ZoomUpdater from "../updater/effect/ZoomUpdater";
+import pubsub from "pubsub-js";
 
 class Player extends GameObject implements Collisionable {
   config: PlayerConfig
@@ -72,16 +73,41 @@ class Player extends GameObject implements Collisionable {
 
   //MARK: Public Methods
 
-  public setMoveTarget(position: TypePosition) {
-    const scale = this.root.scale;
+  public setMoveTarget(position: TypePosition, isMultiMode: boolean = true) {
+    if (isMultiMode) {
+      let args = [...arguments];
+      pubsub.publish(tagSendAct, {
+        action: "play",
+        act: "setMoveTarget",
+        nanoid: this.nanoid,
+        args: args,
+        callback: () => this.setMoveTarget(position, false)
+      });
+      return ;
+    }
     if (position) {
       this.moveTarget = {
-        x: position.x / scale,
-        y: position.y / scale
+        x: position.x,
+        y: position.y
       };
     } else {
       this.moveTarget = null;
     }
+  }
+
+  public toUseSkill(index: number, target: TypePosition, isMultiMode: boolean = true) {
+    if (isMultiMode) {
+      let args = [...arguments];
+      pubsub.publish(tagSendAct, {
+        action: "play",
+        act: "toUseSkill",
+        nanoid: this.nanoid,
+        args: args,
+        callback: () => this.toUseSkill(index, target, false)
+      });
+      return ;
+    }
+    this.skills[index].use(target);
   }
 
   //MARK: Protected Methods
@@ -138,8 +164,8 @@ class Player extends GameObject implements Collisionable {
           break;
         case 2:
           this.setMoveTarget({
-            x: e.offsetX,
-            y: e.offsetY
+            x: e.offsetX / this.root.scale,
+            y: e.offsetY / this.root.scale
           });
           break;
         default:
@@ -149,9 +175,10 @@ class Player extends GameObject implements Collisionable {
     }])
     /// keyup
     this.handlers.push([window, "keyup", (e: KeyboardEvent) => {
-      this.skills.forEach(skill => {
+      this.skills.forEach((skill, index) => {
         if (!this.isAlive) return ;
         if (skill.checkIfUse(e.key)) {
+          this.toUseSkill(index, this.root.cursorPosition);
           skill.use(this.root.cursorPosition);
         }
       });

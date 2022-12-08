@@ -1,6 +1,6 @@
 import {SkillConfig, TypePosition} from "../types";
 
-abstract class Skill {
+class Skill {
   config: SkillConfig;
   lastUsed: Date = new Date();
 
@@ -22,7 +22,8 @@ abstract class Skill {
   }
 
   // 使用技能
-  abstract use(target: TypePosition): void;
+  use(target: TypePosition) {
+  }
 }
 
 export default Skill;

@@ -1,7 +1,10 @@
 import Game from "./Game";
 import Updater from "../updater/Updater";
 
+export const tagMultiGameAct = "tagMultiGameAct";
+
 class GameObject {
+  nanoid: string = "";
   root: Game;
   hasCreated: Boolean;
   hasStarted: Boolean;
