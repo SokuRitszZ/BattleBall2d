@@ -1,12 +1,12 @@
 import React, {useEffect, useRef} from 'react';
 
-import style from "./GameView.module.scss";
-import Game from "../../script/game/base/Game";
-import UserStore from "../../store/user";
-import useAuth from "../../useAuth";
+import style from "./MultiGameView.module.scss";
+import Game from "../../../script/game/base/Game";
+import UserStore from "../../../store/user";
+import useAuth from "../../../useAuth";
 import {useNavigate} from "react-router-dom";
 
-function GameView() {
+function MultiGameView() {
   const $parent = useRef<HTMLDivElement>(null);
   const $canvas = useRef<HTMLCanvasElement>(null);
   let game: Game;
@@ -30,4 +30,4 @@ function GameView() {
   );
 }
 
-export default GameView;
+export default MultiGameView;

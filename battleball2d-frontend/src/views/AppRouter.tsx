@@ -2,7 +2,7 @@ import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import App from "../App";
 import AccountView from "./Account/AccountView";
 import LobbyView from "./Lobby/LobbyView";
-import GameView from "./Game/GameView";
+import SingleGameView from "./Game/SingleGame/SingleGameView";
 import {ReactNode} from "react";
 import {isLogin} from "../store/user";
 import SettingsView from "./Lobby/Settings/SettingsView";
@@ -41,7 +41,7 @@ function AppRouter() {
     {
       path: "/game",
       auth: true,
-      component: <GameView/>
+      component: <SingleGameView/>
     }
   ];
 

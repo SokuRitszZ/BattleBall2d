@@ -41,7 +41,7 @@
 }
 
 .message {
-  @apply m-4 border-2 rounded-2xl w-fit
+  @apply m-4 border-2 rounded-2xl w-fit max-w-full
 }
 
 .messageHeader {
@@ -52,5 +52,5 @@
 }
 
 .messageBody {
-  @apply p-2
+  @apply p-2 break-all
 }

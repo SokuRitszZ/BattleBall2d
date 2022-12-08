@@ -1,6 +1,6 @@
 import AccountView from "../views/Account/AccountView";
 import LobbyView from "../views/Lobby/LobbyView";
-import GameView from "../views/Game/GameView";
+import SingleGameView from "../views/Game/SingleGame/SingleGameView";
 import EnterView from "../views/EnterView";
 
 const routes: any[] = [
@@ -17,8 +17,8 @@ const routes: any[] = [
     element: <LobbyView/>,
   },
   {
-    path: "/game",
-    element: <GameView/>,
+    path: "/singlegame",
+    element: <SingleGameView/>,
   }
 ];
 

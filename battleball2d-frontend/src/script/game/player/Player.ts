@@ -47,7 +47,7 @@ class Player extends GameObject implements Collisionable {
       cd: 3,
       key: "q",
       parent: this
-    }))
+    }));
 
     /// updater
     this.updaters.push(new TargetMoveUpdater(this, this.config.speed));

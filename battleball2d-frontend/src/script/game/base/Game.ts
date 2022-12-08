@@ -5,7 +5,6 @@ import {GameMapConfig, ModeEnum, PlayerConfig, TypePosition} from "../types";
 import Player from "../player/Player";
 import {UserInfo} from "../../../store/user";
 import AIPlayer from "../player/AIPlayer";
-import gameObject from "./GameObject";
 
 class Game {
   $parent: HTMLDivElement;
@@ -62,7 +61,7 @@ class Game {
         y: this.screenConfig.heightRatio / 2
       }, {
         maxHP: 100,
-        headIcon: user!.headIcon,
+        headIcon: G.randomPicUrl(),
         radius: 0.5,
         speed: 1,
         isOperated: false

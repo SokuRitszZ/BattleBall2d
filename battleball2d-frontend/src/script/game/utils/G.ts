@@ -48,6 +48,16 @@ class G {
     c.fillStyle = color || "#fff";
     c.fill();
   }
+
+  static randomPicUrl() {
+    const randomHex = () => {
+      return new Array(6)
+        .fill("0")
+        .map(() => Math.floor(Math.random() * 16).toString(16))
+        .join("");
+    };
+    return `https://sdfsdf.dev/500x500.png,${randomHex()},${randomHex()}`;
+  }
 }
 
 type TypeRectangle = TypePosition & {

@@ -51,19 +51,19 @@
 .button {
   transition: 20ms;
   @apply
-  block
-  font-bold
-  select-none
-  w-fit
-  m-3
-  rounded-3xl
-  p-4
-  shadow-xl
-  w-fit
-  cursor-pointer
-  mt-5
-  select-none
-  hover:shadow-2xl
-  active:shadow
+    block
+    font-bold
+    select-none
+    w-fit
+    m-3
+    rounded-3xl
+    p-4
+    shadow-xl
+    w-fit
+    cursor-pointer
+    mt-5
+    select-none
+    hover:shadow-2xl
+    active:shadow
 }
 

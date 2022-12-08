@@ -1,0 +1,63 @@
+@import "../GlobalChat/GlobalChatView.module.scss";
+
+.frame {
+  animation: fadeRight 0.5s;
+  max-width: 480px;
+  @apply
+    w-fit
+    h-full
+    bg-gray-50
+    rounded-2xl
+    p-4;
+}
+
+.header {
+  backgroud: inherit;
+  @apply font-bold text-3xl bg-gray-50
+}
+
+.body {
+  @apply bg-gray-50 grid grid-cols-4 gap-2 h-fit;
+
+  input {
+    @apply border-2 col-span-3 p-2 rounded-xl
+  }
+
+  button {
+    @apply bg-blue-500 col-span-1 p-2 rounded-xl text-white
+    hover:bg-blue-600 active:bg-blue-700
+  }
+}
+
+.tip {
+  @apply text-gray-300 ml-4
+}
+
+.belt {
+  @apply pl-4 text-gray-400
+}
+
+.waist {
+  @apply w-full flex p-4 flex-wrap justify-around
+}
+
+.player {
+  width: 100px;
+  height: 120px;
+  @apply flex-shrink-0 p-2 rounded-2xl box-border
+  hover:bg-gray-300 active:bg-gray-400;
+
+  img {
+    width: 80px;
+    height: 80px;
+    @apply rounded-full m-auto;
+  }
+
+  .title {
+    @apply text-center;
+  }
+}
+
+.active {
+  @apply bg-green-400
+}

@@ -9,8 +9,11 @@ import GlobalChatView, {Message, tagReceiveMsg} from "./GlobalChat/GlobalChatVie
 import pubsub from "pubsub-js";
 
 import {host} from "../../../config.json";
+import PrepareGameView, {PrepareGameProps} from "./PrepareGame/PrepareGameView";
+import {connect, sendMessage} from "../../store/websocket";
 
 export const tagSendText = "tagSendText";
+export const tagGame = "tagGame";
 
 function LobbyView() {
   const navigate = useNavigate();
@@ -21,33 +24,55 @@ function LobbyView() {
   });
   const showingView =  useState<string>("null");
   const messages = useState<Message[]>([]);
+  const canUseSubview = useState<boolean>(false);
 
-  let ws: WebSocket;
+  const pgProps = useState<PrepareGameProps>({
+    players: [], roomId: "未加入房间"
+  });
 
   useEffect(() => {
     pubsub.subscribe(tagSendText, (tg, text) => {
-      // console.log(msg, data);
-      ws.send(text);
+      sendMessage({
+        service: "chat",
+        data: {
+          content: text
+        }
+      });
     });
-
+    pubsub.subscribe(tagGame, (tg, data) => {
+      sendMessage({
+        service: "game",
+        data
+      });
+    });
     useAuth(navigate)
       .then(() => {
         info[1](UserStore.info);
-        ws = new WebSocket(`ws://${host}:3000/chat/${UserStore.token}`);
-        ws.onopen = () => console.log("open websocket.");
-        ws.onclose = () => console.log("close websocket.");
-        ws.onmessage = (msge: MessageEvent) => {
-          const msg: Message = JSON.parse(msge.data) as Message;
-          addMessage(msg);
-        }
+        connect(`${host}:3000`, (messageEvent?: MessageEvent) => {
+          if (!messageEvent) return () => {
+            console.log("close websocket");
+          }
+          const message = JSON.parse(messageEvent.data);
+          const data = message.data;
+          switch (message.service) {
+            case "chat":
+              handleChat(data);
+              break;
+            case "game":
+              handleGame(data);
+              break;
+            default:
+              break;
+          }
+          canUseSubview[1](true);
+        });
       });
     return () => {
       pubsub.unsubscribe(tagSendText);
-      ws.close();
+      pubsub.unsubscribe(tagGame);
     }
   }, []);
 
-  // const messages = useState<Message[]>([]);
   const addMessage = (msg: Message) => {
     messages[1](list => [...list, msg]);
     pubsub.publish(tagReceiveMsg);
@@ -67,28 +92,58 @@ function LobbyView() {
         return <SettingsView/>
       case "globalchat":
         return <GlobalChatView messages={messages[0]}/>
+      case "preparegame":
+        return <PrepareGameView {...pgProps[0]}/>
       default:
         return ""
     }
   };
 
-  const handleSingleMode = () => {
-    navigate("/game");
-  };
-
-  const handleMultiMode = () => {
-
-  };
-
-  const handleGlobalChat = () => {
-    if (showingView[0] === "globalchat") showingView[1]("null");
-    else showingView[1]("globalchat");
+  const handleChat = (data: any) => {
+    addMessage(data.message);
   }
 
-  const handleSettings = () => {
-    if (showingView[0] === "settings") showingView[1]("null");
-    else showingView[1]("settings");
+  const handleGame = (data: any) => {
+    switch (data.action) {
+      case "member":
+        pgProps[1](state => {
+          return {
+            roomId: data.roomId,
+            players: data.members
+          }
+        });
+        break;
+      case "exit":
+        pgProps[1](state => {
+          return {
+            ...state,
+            players: state.players.filter(member => member.id !== data.id)
+          }
+        });
+        break;
+      case "prepare":
+        pgProps[1](pre => {
+          const players = pre.players;
+          players.forEach(player => player.id === data.id ? player.isOk = data.isOk : "");
+          pre = {...pre, players};
+          return pre;
+        });
+        break;
+      default:
+        console.log(`未知动作：${data.action}`);
+        break;
+    }
   };
+
+  const handleSingleMode = () => {
+    navigate("/singlegame");
+  };
+
+  const handleChangeSubview = (subview: string) => {
+    if (!canUseSubview[0]) return ;
+    if (showingView[0] === subview) showingView[1]("null");
+    else showingView[1](subview);
+  }
 
   const handleLogout = () => {
     logout()
@@ -106,9 +161,9 @@ function LobbyView() {
       <div className={style.body}>
         <div className={style.left}>
           <div className={style.button} onClick={handleSingleMode}>单人游戏</div>
-          <div className={style.button} onClick={handleMultiMode}>多人游戏</div>
-          <div className={style.button} onClick={handleGlobalChat}>公共聊天</div>
-          <div className={style.button} onClick={handleSettings}>账号设置</div>
+          <div className={style.button} onClick={() => handleChangeSubview("preparegame")}>多人游戏</div>
+          <div className={style.button} onClick={() => handleChangeSubview("globalchat")}>公共聊天</div>
+          <div className={style.button} onClick={() => handleChangeSubview("settings")}>账号设置</div>
           <div className={style.button} onClick={handleLogout}>退出账号</div>
         </div>
         <div className={style.right}>
