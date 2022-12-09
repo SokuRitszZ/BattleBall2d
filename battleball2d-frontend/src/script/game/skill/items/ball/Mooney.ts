@@ -29,7 +29,7 @@ class Mooney extends Ball implements Collisionable {
     this.checkAttacked();
 
     new Shadow(this.root, this.position!, {
-      color: this.config.color!, radius: this.config.radius
+      color: "#cccccc", radius: this.config.radius
     });
   }
 

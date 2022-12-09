@@ -7,7 +7,6 @@ import Player from "../../../player/Player";
 import Particle from "./Particle";
 import Spark from "./Spark";
 import DirectMoveUpdater from "../../../updater/move/DirectMoveUpdater";
-import game from "../../../base/Game";
 
 class FireBall extends Ball implements Collisionable {
   constructor(root: Game, parent: Player, position: TypePosition, config: BallConfig) {
@@ -26,11 +25,15 @@ class FireBall extends Ball implements Collisionable {
   update() {
     super.update();
     this.checkAttacked();
-
-    new Spark(this.root, this.position, {
-      color: this.config.color!,
+    const {x, y} = this.position!;
+    const angle = this.config.angle;
+    new Spark(this.root, {
+      x: x + 1 * this.config.radius * Math.cos(angle),
+      y: y + 1 * this.config.radius * Math.sin(angle)
+    }, {
+      color: "#e3ac72",
       radius: this.config.radius,
-      time: 0.5
+      time: 0.15
     });
   }
 
@@ -54,13 +57,13 @@ class FireBall extends Ball implements Collisionable {
   onDestroy() {
     for (let i = 0; i < 10; ++i) {
       const angle = Math.PI * 2 * Math.random();
-      const len = Math.random() * 2 + 1;
+      const len = Math.random() * 2 + 0.5;
       new Particle(this.root, this.position, {
-        radius: 0.03,
+        radius: 0.07,
         angle,
         color: this.config.color || "#129090",
         maxLen: len,
-        maxRadius: 0.03,
+        maxRadius: 0.07,
         maxTime: 0.5
       });
     }

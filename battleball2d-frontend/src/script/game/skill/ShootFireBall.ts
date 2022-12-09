@@ -1,6 +1,5 @@
 import Skill from "./Skill";
 import {SkillConfig, TypePosition} from "../types";
-import Ball from "./items/ball/Ball";
 import C from "../utils/C";
 import FireBall from "./items/ball/FireBall";
 
@@ -30,7 +29,7 @@ class ShootFireBall extends Skill {
         parent,
         radius: 0.15,
         speed: 5,
-        color: "#e3ac72"
+        color: "#ff8000"
       }
     );
   }

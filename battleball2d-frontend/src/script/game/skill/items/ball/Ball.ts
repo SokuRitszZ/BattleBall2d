@@ -39,9 +39,7 @@ class Ball extends GameObject {
     this.render()
   }
 
-  //MARK: Private Methods
-
-  private render() {
+  render() {
     const scale = this.root.scale;
     const {x, y} = this.position!;
     const {radius, color} = this.config;
@@ -53,6 +51,7 @@ class Ball extends GameObject {
       color: color || "#fff"
     });
   }
+  //MARK: Private Methods
 }
 
 

@@ -26,7 +26,14 @@ class Spark extends GameObject {
 
   onStart() {
     // Zoom
-    this.updaters.push(new ZoomUpdater(this, this.config.time, radius => radius * 0.8));
+    const R = this.config.radius;
+    let T = this.config.time;
+    const k = R / Math.pow(T, 0.75);
+    this.updaters.push(new ZoomUpdater(this, this.config.time, radius => {
+      radius = k * Math.pow(Math.max(0, T), 0.75);
+      T -= this.deltaTime;
+      return radius;
+    }));
     // Fade
     this.updaters.push(new FadeUpdater(this, this.config.time, color => {
       if (/^#[0-9a-zA-Z]+$/.test(color)) {
