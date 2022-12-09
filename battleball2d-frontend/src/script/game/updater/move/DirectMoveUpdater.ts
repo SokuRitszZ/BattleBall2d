@@ -1,10 +1,12 @@
 import Updater from "../Updater";
 import {TypePosition} from "../../types";
 import GameObject from "../../base/GameObject";
-import config from "tailwindcss/defaultConfig";
 
 class DirectMoveUpdater extends Updater {
+  angle: number;
+  speed: number;
   maxLength: number;
+  disappearIfEnd: boolean;
 
   constructor(receptor: GameObject & {position: TypePosition}, config: {
     angle: number,
@@ -17,13 +19,20 @@ class DirectMoveUpdater extends Updater {
         if (config.disappearIfEnd) receptor.destroy();
         return ;
       }
-      const moveDistance = receptor.deltaTime * config.speed;
+      const moveDistance = receptor.deltaTime * this.speed;
       const position = receptor.position;
-      position!.x += moveDistance * Math.cos(config.angle);
-      position!.y += moveDistance * Math.sin(config.angle);
+      position!.x += moveDistance * Math.cos(this.angle);
+      position!.y += moveDistance * Math.sin(this.angle);
       this.maxLength -= moveDistance;
     });
+    this.angle = config.angle;
+    this.speed = config.speed;
     this.maxLength = config.maxLength || NaN;
+    this.disappearIfEnd = config.disappearIfEnd || false;
+  }
+
+  setConfig(key: "speed" | "angle", value: any) {
+    this[key] = value;
   }
 }
 

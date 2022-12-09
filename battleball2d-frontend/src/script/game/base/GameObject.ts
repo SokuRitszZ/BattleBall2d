@@ -1,8 +1,6 @@
 import Game from "./Game";
 import Updater from "../updater/Updater";
 
-export const tagMultiGameAct = "tagMultiGameAct";
-
 class GameObject {
   nanoid: string = "";
   root: Game;
@@ -51,8 +49,7 @@ class GameObject {
   }
 
   destroy() {
-    if (this.hasDestroyed)
-      throw new Error("This Game Object has been destroyed.");
+    if (this.hasDestroyed) return ;
 
     this.onDestroy();
 

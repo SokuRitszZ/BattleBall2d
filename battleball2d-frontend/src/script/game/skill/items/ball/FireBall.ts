@@ -7,6 +7,7 @@ import Player from "../../../player/Player";
 import Particle from "./Particle";
 import Spark from "./Spark";
 import DirectMoveUpdater from "../../../updater/move/DirectMoveUpdater";
+import game from "../../../base/Game";
 
 class FireBall extends Ball implements Collisionable {
   constructor(root: Game, parent: Player, position: TypePosition, config: BallConfig) {
@@ -33,7 +34,7 @@ class FireBall extends Ball implements Collisionable {
     });
   }
 
-  afterAttacked(): void {
+  afterAttacked(params?: any): void {
     this.destroy();
   }
 
@@ -43,9 +44,9 @@ class FireBall extends Ball implements Collisionable {
       if (gameObject === this) continue ;
       if (gameObject === this.config.parent) continue ;
       if (!C.isCollision(this, gameObject as unknown as CircleConfig)) continue ;
-      this.destroy();
       if (gameObject instanceof Player) gameObject.HP -= this.config.damage!;
-      (gameObject as unknown as Collisionable).afterAttacked();
+      (gameObject as unknown as Collisionable).afterAttacked(this);
+      this.afterAttacked(gameObject);
       return ;
     }
   }

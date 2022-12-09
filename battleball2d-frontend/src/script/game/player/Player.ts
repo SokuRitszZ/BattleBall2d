@@ -9,6 +9,7 @@ import Collisionable from "../interfaces";
 import TargetMoveUpdater from "../updater/move/TargetMoveUpdater";
 import ZoomUpdater from "../updater/effect/ZoomUpdater";
 import pubsub from "pubsub-js";
+import ShootMooney from "../skill/ShootMooney";
 
 class Player extends GameObject implements Collisionable {
   config: PlayerConfig
@@ -47,6 +48,11 @@ class Player extends GameObject implements Collisionable {
     this.skills.push(new ShootFireBall({
       cd: 3,
       key: "q",
+      parent: this
+    }));
+    this.skills.push(new ShootMooney({
+      cd: 1,
+      key: "w",
       parent: this
     }));
 
