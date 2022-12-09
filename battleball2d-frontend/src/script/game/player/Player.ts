@@ -10,6 +10,7 @@ import TargetMoveUpdater from "../updater/move/TargetMoveUpdater";
 import ZoomUpdater from "../updater/effect/ZoomUpdater";
 import pubsub from "pubsub-js";
 import ShootMooney from "../skill/ShootMooney";
+import Particle from "../skill/items/ball/Particle";
 
 class Player extends GameObject implements Collisionable {
   config: PlayerConfig
@@ -41,7 +42,23 @@ class Player extends GameObject implements Collisionable {
 
   checkAttacked(): void {}
 
-  afterAttacked(): void {}
+  afterAttacked(obj: any): void {
+    const angle = C.angle(this.position, obj.position);
+    let {x, y} = this.position!;
+    x += this.config.radius * Math.cos(angle);
+    y += this.config.radius * Math.sin(angle);
+    const n = 5 + Math.floor(Math.random() * 10);
+    for (let i = 0; i < n; ++i) {
+      new Particle(this.root, {x, y}, {
+        angle: Math.PI * 2 * Math.random(),
+        color: "#ff0000",
+        maxLen: 1 + 0.5 * Math.random(),
+        maxRadius: 0.05,
+        maxTime: 0.5,
+        radius: 0.05
+      });
+    }
+  }
 
   onStart() {
     /// skill
