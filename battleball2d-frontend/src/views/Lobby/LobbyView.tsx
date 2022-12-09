@@ -7,7 +7,7 @@ import useAuth from "../../useAuth";
 import SettingsView from "./Settings/SettingsView";
 import GlobalChatView from "./GlobalChat/GlobalChatView";
 
-import {host} from "../../../config.json";
+import {mode, ws} from "../../../config.json";
 import PrepareGameView from "./PrepareGame/PrepareGameView";
 import WebSocketStore, {connect} from "../../store/websocket";
 
@@ -27,7 +27,7 @@ function LobbyView() {
       .then(() => {
         info[1](UserStore.info);
         if (!WebSocketStore.websocket) {
-          connect(`${host}:3000`);
+          connect(`${ws[mode]}`);
         }
         canUseSubview[1](true);
       });

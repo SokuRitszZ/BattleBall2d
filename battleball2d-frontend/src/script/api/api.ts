@@ -1,10 +1,10 @@
 import axios from "axios";
 import UserStore from "../../store/user";
 
-import {host} from "../../../config.json";
+import {host, mode} from "../../../config.json";
 
 const api = axios.create({
-  baseURL: `http://${host}:8080/api`
+  baseURL: `http://${host[mode]}/api`
 });
 
 api.interceptors.response.use(res => {

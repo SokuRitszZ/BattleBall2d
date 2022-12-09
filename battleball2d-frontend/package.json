@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "upload": "scp -r dist root-andrew:/home/leung"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.9.1",
