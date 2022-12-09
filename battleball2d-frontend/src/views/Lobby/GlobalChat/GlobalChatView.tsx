@@ -1,9 +1,9 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import style from "./GlobalChatView.module.scss";
 import dayjs from "dayjs";
-import pubsub from "pubsub-js";
-import {tagSendText} from "../LobbyView";
+import ChatStore, {addMessage} from "../../../store/chat";
+import {addHandler, sendMessage} from "../../../store/websocket";
 
 export type Message = {
   id: string
@@ -12,52 +12,62 @@ export type Message = {
   sender: string
 }
 
-export const tagReceiveMsg = "tagReceiveMsg";
-
-function GlobalChatView(props: {
-  messages: Message[]
-}) {
+function GlobalChatView() {
   const $input = useRef<HTMLInputElement>(null);
   const $body = useRef<HTMLDivElement>(null);
+  const messages = useState<Message[]>(ChatStore.messages);
+
+  // did mount
+  useEffect(() => {
+    addHandler("chat", data => {
+      addMessage(data.message).then(newMessages => {
+        messages[1](_ => [...newMessages]);
+        if ($body.current)
+          setTimeout(() => {
+            if ($body.current)
+              $body.current.scrollTop = $body.current.scrollHeight;
+          });
+      });
+    });
+  }, []);
+
+  // will unmount
+  useEffect(() => {
+    return () => {
+
+    }
+  });
+
   const handleAddMessage = () => {
     if ($input.current) {
       const text = $input.current.value;
       if (!text) return ;
-      pubsub.publish(tagSendText, text);
+      sendMessage({
+        service: "chat",
+        data: {
+          content: text
+        }
+      });
       $input.current.value = "";
     }
   }
 
-  useEffect(() => {
-    pubsub.subscribe(tagReceiveMsg, () => {
-      setTimeout(() => {
-        if ($body.current)
-          $body.current.scrollTop = $body.current.scrollHeight;
-      });
-    });
-    return () => {
-      pubsub.unsubscribe(tagReceiveMsg);
-    };
-  }, []);
-
   return (
     <div style={{maxWidth: "480px"}} className={style.frame}>
       <div className={style.header}>公共频道（吹水窗口）</div>
-      <div ref={$body} className={style.body}>
-        {
-          props.messages.map(message => (
-            <div key={message.id} className={style.message}>
-              <div className={style.messageHeader}>
-                {message.sender}
-                <span>{dayjs(message.time).format("YYYY-MM-DD HH:mm:ss")}</span>
-              </div>
-              <div className={style.messageBody}>
-                {message.content}
-              </div>
+      <div ref={$body} className={style.body}> {
+        messages[0].map(message => (
+          <div key={message.id} className={style.message}>
+            <div className={style.messageHeader}>
+              {message.sender}
+              <span>{dayjs(message.time).format("YYYY-MM-DD HH:mm:ss")}</span>
             </div>
-          ))
-        }
-      </div>
+            <div className={style.messageBody}>
+              {message.content}
+            </div>
+          </div>
+        ))
+      } </div>
       <div className={style.footer}>
         <input onKeyUp={(e) => e.key === "Enter" && handleAddMessage()} ref={$input} type="text" placeholder="友善交流"/>
         <button onClick={handleAddMessage}>发送</button>

@@ -5,18 +5,11 @@ import {useNavigate} from "react-router-dom";
 import UserStore, {logout, UserInfo} from "../../store/user";
 import useAuth from "../../useAuth";
 import SettingsView from "./Settings/SettingsView";
-import GlobalChatView, {Message, tagReceiveMsg} from "./GlobalChat/GlobalChatView";
-import pubsub from "pubsub-js";
+import GlobalChatView from "./GlobalChat/GlobalChatView";
 
 import {host} from "../../../config.json";
-import PrepareGameView, {PrepareGameProps} from "./PrepareGame/PrepareGameView";
-import WebSocketStore, {connect, sendMessage} from "../../store/websocket";
-import Player from "../../script/game/player/Player";
-import {tagMultiGameAct} from "../../script/game/base/GameObject";
-import {tagReceiveAct} from "../../script/game/base/Game";
-
-export const tagSendText = "tagSendText";
-export const tagGame = "tagGame";
+import PrepareGameView from "./PrepareGame/PrepareGameView";
+import WebSocketStore, {connect} from "../../store/websocket";
 
 function LobbyView() {
   const navigate = useNavigate();
@@ -26,64 +19,25 @@ function LobbyView() {
     headIcon: "", id: 0, username: ""
   });
   const showingView =  useState<string>("null");
-  const messages = useState<Message[]>([]);
   const canUseSubview = useState<boolean>(false);
 
-  const pgProps = useState<PrepareGameProps>({
-    players: [], roomId: "未加入房间"
-  });
-
-  let players: UserInfo[] = [];
-
+  // didmount
   useEffect(() => {
-    pubsub.subscribe(tagSendText, (tg, text) => {
-      sendMessage({
-        service: "chat",
-        data: {
-          content: text
-        }
-      });
-    });
-    pubsub.subscribe(tagGame, (tg, data) => {
-      sendMessage({
-        service: "game",
-        data
-      });
-    });
     useAuth(navigate)
       .then(() => {
         info[1](UserStore.info);
         if (!WebSocketStore.websocket) {
-          connect(`${host}:3000`, (messageEvent?: MessageEvent) => {
-            if (!messageEvent) return () => {
-              console.log("close websocket");
-            }
-            const message = JSON.parse(messageEvent.data);
-            const data = message.data;
-            switch (message.service) {
-              case "chat":
-                handleChat(data);
-                break;
-              case "game":
-                handleGame(data);
-                break;
-              default:
-                break;
-            }
-          });
+          connect(`${host}:3000`);
         }
         canUseSubview[1](true);
       });
-    return () => {
-      pubsub.unsubscribe(tagSendText);
-      pubsub.unsubscribe(tagGame);
-    }
   }, []);
 
-  const addMessage = (msg: Message) => {
-    messages[1](list => [...list, msg]);
-    pubsub.publish(tagReceiveMsg);
-  };
+  // will unmount
+  useEffect(() => {
+    return () => {
+    };
+  }, [])
 
   const getCurrent = () => {
     const now = new Date();
@@ -91,70 +45,19 @@ function LobbyView() {
     if (6 <= hours && hours <= 11) return "Good Morning!";
     if (12 <= hours && hours <= 19) return "Good Afternoon!";
     return "Good Evening!";
-  }
+  };
 
   const view = () => {
     switch (showingView[0]) {
       case "settings":
         return <SettingsView/>
       case "globalchat":
-        return <GlobalChatView messages={messages[0]}/>
+        return <GlobalChatView/>
       case "preparegame":
-        return <PrepareGameView {...pgProps[0]}/>
+        return <PrepareGameView/>
       default:
         return ""
     }
-  };
-
-  const handleChat = (data: any) => {
-    addMessage(data.message);
-  }
-
-  const handleGame = (data: any) => {
-    switch (data.action) {
-      case "member":
-        players = [...data.members];
-        pgProps[1](state => {
-          return {
-            roomId: data.roomId,
-            players: data.members
-          }
-        });
-        break;
-      case "exit":
-        pgProps[1](state => {
-          return {
-            ...state,
-            players: state.players.filter(member => member.id !== data.id)
-          }
-        });
-        break;
-      case "prepare":
-        pgProps[1](pre => {
-          const players = pre.players;
-          players.forEach(player => player.id === data.id ? player.isOk = data.isOk : "");
-          pre = {...pre, players};
-          return pre;
-        });
-        break;
-      case "start":
-        navigate("/multigame", {
-          state: {
-            players
-          }
-        });
-        break;
-      case "play":
-        pubsub.publish(tagReceiveAct, data);
-        break;
-      default:
-        console.log(`未知动作：${data.action}`);
-        break;
-    }
-  };
-
-  const handleInGame = (data: any) => {
-    pubsub.publish(tagMultiGameAct, data);
   };
 
   const handleSingleMode = () => {

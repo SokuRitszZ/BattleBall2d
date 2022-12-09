@@ -1,5 +1,12 @@
 import {getInfoApi} from "../script/api/user";
 
+export type UserInfo = {
+  id: number
+  username: string
+  headIcon: string
+  nanoid?: string
+};
+
 const initInfo: UserInfo = {
   id: -1,
   username: "",
@@ -14,13 +21,6 @@ const UserStore: {
   token: "",
   info: initInfo,
   status: "unlogin"
-};
-
-export type UserInfo = {
-  id: number
-  username: string
-  headIcon: string
-  nanoid?: string
 };
 
 let resolveLogined: (...args: any) => void, rejectLogined: (...args: any) => void;

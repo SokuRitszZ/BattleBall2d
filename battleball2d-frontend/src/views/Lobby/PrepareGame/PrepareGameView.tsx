@@ -1,29 +1,56 @@
 import React, {useEffect, useRef, useState} from 'react';
 
 import style from "./PrepareGameView.module.scss";
-import pubsub from "pubsub-js";
 import UserStore from "../../../store/user";
-import {tagGame} from "../LobbyView";
+import {addHandler, sendMessage} from "../../../store/websocket";
+import PrepareStore, {initializePrepare, removePlayer, setOk, setPlayers} from "../../../store/prepare";
+import {useNavigate} from "react-router-dom";
+import Prepare from "../../../store/prepare";
 
-type Player = {
+export type Player = {
   id: number
   username: string
   headIcon: string
   isOk: boolean
 };
 
-export type PrepareGameProps = {
-  roomId: string
-  players: Player[]
-};
+function PrepareGameView() {
+  const navigate = useNavigate();
 
-export const tagJoin = "tagJoin";
-
-function PrepareGameView(props: PrepareGameProps) {
   const $input = useRef<HTMLInputElement>(null);
-  const textInButton = useState<string>("随机加入");
+  const $body = useRef<HTMLDivElement>(null);
 
+  const textInButton = useState<string>("随机加入");
+  const players = useState<Player[]>(PrepareStore.players);
+  const roomId = useState<string>(Prepare.roomId);
+
+  // did mount
   useEffect(() => {
+    addHandler("game", data => {
+      switch (data.action) {
+        case "member":
+          roomId[1](data.roomId);
+          setPlayers(data.members).then(newPlayers => players[1](_ => [...newPlayers]));
+          break;
+        case "exit":
+          removePlayer(data.id).then(newPlayers => players[1](_ => [...newPlayers]));
+          break;
+        case "prepare":
+          setOk(data.id, data.isOk).then(newPlayers => players[1](_ => [...newPlayers]));
+          break;
+        case "start":
+          navigate("/multigame");
+          break;
+        default:
+          console.log(`未知动作：${data.action}`);
+          break;
+      }
+    });
+  }, []);
+
+  // will unmount
+  useEffect(() => {
+    return () => {}
   }, []);
 
   const handleChange = () => {
@@ -33,19 +60,25 @@ function PrepareGameView(props: PrepareGameProps) {
 
   const handleJoin = () => {
     if ($input.current) {
-      pubsub.publish(tagGame, {
-        action: "join",
-        roomId: $input.current.value
+      sendMessage({
+        service: "game",
+        data: {
+          action: "join",
+          roomId: $input.current.value
+        }
       });
     }
   };
 
   const handlePrepare = (id: number) => {
     if (id !== UserStore.info.id) return ;
-    pubsub.publish(tagGame, {
-      action: "prepare"
+    sendMessage({
+      service: "game",
+      data: {
+        action: "prepare"
+      }
     });
-  }
+  };
 
   return (
     <div className={style.frame}>
@@ -58,12 +91,16 @@ function PrepareGameView(props: PrepareGameProps) {
         <input onChange={handleChange} ref={$input} type="text"/>
         <button onClick={handleJoin}>{textInButton[0]}</button>
       </div>
-      <div className={style.belt}>房间号：{props.roomId}</div>
-      <div className={style.waist}>
+      <div className={style.belt}>房间号：{roomId[0]}</div>
+      <div ref={$body} className={style.waist}>
         {
-          props.players.map(player => {
+          players[0].map(player => {
             return (
-              <div key={player.id} className={style.player + " " + (player.isOk ? style.active : "")} onClick={() => handlePrepare(player.id)}>
+              <div
+                key={player.id}
+                className={style.player + " " + (player.isOk ? style.active : "")}
+                onClick={() => handlePrepare(player.id)}
+              >
                 <img src={player.headIcon} alt=""/>
                 <div className={style.title}>
                   {player.username}

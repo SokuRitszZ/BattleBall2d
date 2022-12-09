@@ -1,4 +1,4 @@
-import GameObject, {tagMultiGameAct} from "./GameObject";
+import GameObject from "./GameObject";
 import GameMap from "../map/GameMap";
 import G from "../utils/G";
 import {GameMapConfig, ModeEnum, TypePosition} from "../types";
@@ -190,11 +190,10 @@ class Game {
     c.canvas.width = rect.clientWidth;
     c.canvas.height = rect.clientHeight;
     const {width, height} = c.canvas;
-    const scale = Math.min(
+    this.scale = Math.min(
       width / this.screenConfig.widthRatio,
       height / this.screenConfig.heightRatio
     );
-    this.scale = scale;
   }
 }
 
