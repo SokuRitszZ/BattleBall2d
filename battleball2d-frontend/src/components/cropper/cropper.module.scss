@@ -1,0 +1,12 @@
+.container {
+  @apply w-full;
+}
+
+.button {
+  @apply inline bg-green-500 p-2 rounded-xl w-fit text-white hover:bg-green-600 active:bg-green-700;
+}
+
+.img {
+  width: 10rem;
+  height: 10rem;
+}

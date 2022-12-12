@@ -10,11 +10,15 @@ import GlobalChatView from "./GlobalChat/GlobalChatView";
 import {mode, ws} from "../../../config.json";
 import PrepareGameView from "./PrepareGame/PrepareGameView";
 import WebSocketStore, {connect} from "../../store/websocket";
+import pubsub from "pubsub-js";
+
+export const tagSetInfo = "tagSetInfo";
 
 function LobbyView() {
   const navigate = useNavigate();
 
   const $frame = useRef<HTMLDivElement>(null);
+  const $img = useRef<HTMLImageElement>(null);
   const info = useState<UserInfo>({
     headIcon: "", id: 0, username: ""
   });
@@ -38,6 +42,13 @@ function LobbyView() {
     return () => {
     };
   }, [])
+
+  pubsub.subscribe(tagSetInfo, (tg, data) => {
+    if (!$img.current) return ;
+    const newSrc = `${data.headIcon}?time=${Date.now()}`;
+    $img.current.src = newSrc;
+    info[1](pre => ({...pre, headIcon: newSrc}));
+  });
 
   const getCurrent = () => {
     const now = new Date();
@@ -80,7 +91,7 @@ function LobbyView() {
   return (
     <div ref={$frame} className={style.frame}>
       <div className={style.header}>
-        <img src={info[0].headIcon} alt=""/>
+        <img ref={$img} src={info[0].headIcon} alt=""/>
         <div>{getCurrent()} {info[0].username}</div>
       </div>
       <div className={style.body}>

@@ -17,6 +17,8 @@ const bodyParser = require("body-parser");
 server.use(bodyParser.urlencoded({extended: false}));
 server.use(bodyParser.json());
 
+server.use(express.static("public"));
+
 const jwt = require("express-jwt").expressjwt;
 server.use(jwt({
   secret: JWT_SECRETKEY,

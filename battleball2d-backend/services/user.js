@@ -2,11 +2,13 @@ const crypto = require("crypto");
 const R = require("../utils/R");
 const User = require("../db/models/User");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 
 const {
   PASSWORD_SECRETKEY,
   JWT_SECRETKEY
 } = require("../config.json");
+const path = require("path");
 
 const register = async (username, password, confirmedPassword) => {
   if (!username || !password || !confirmedPassword)
@@ -93,8 +95,35 @@ const getInfo = async id => {
   });
 };
 
+const {mode, host} = require("../config.json");
+
+const setHeadIcon = async (id, file) => {
+  // save img
+  const newpath = path.join(__dirname, `../public/static/images/headIcon_${id}.png`);
+  try {
+    fs.renameSync(file.filepath, newpath);
+    const user = await User.findOne({
+      where: {
+        id: id
+      }
+    });
+    const url = `${host[mode]}/static/images/headIcon_${id}.png`;
+    if (user.headIcon !== url) {
+      user.headIcon = url;
+      user.save();
+    }
+    return R.ok({
+      headIcon: user.headIcon
+    });
+  } catch (e) {
+    console.log(e);
+    return R.fail("保存失败：-2");
+  }
+};
+
 module.exports = {
   register,
   login,
-  getInfo
+  getInfo,
+  setHeadIcon
 };

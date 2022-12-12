@@ -1,5 +1,11 @@
 @import "../GlobalChat/GlobalChatView.module.scss";
 
+.button {
+  @apply
+  bg-blue-500 text-white p-3 m-3 rounded-xl text-lg hover:bg-blue-500 active:bg-blue-600
+  w-fit;
+}
+
 .frame {
   animation: fadeRight 0.5s;
   @apply
@@ -11,6 +17,7 @@
 
   img {
     width: 10rem;
+    @apply inline-block
   }
 
   label {
@@ -41,4 +48,15 @@
     border-dashed
     p-2
     w-fit;
+}
+
+.headIcon {
+  @apply block h-fit;
+}
+
+.cropContainer {
+  @apply inline-block;
+  & .crop-drag-box {
+    max-width: 100%;
+  }
 }

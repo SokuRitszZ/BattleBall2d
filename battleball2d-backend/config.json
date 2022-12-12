@@ -1,4 +1,9 @@
 {
   "JWT_SECRETKEY": "3quh9h2u04[3ipoekfl;dsbnldkfgoept4u[3i2r[pkeff;nkdglfht",
-  "PASSWORD_SECRETKEY": "OWIEFHYGUIBRLKBHJLKHOIWEFHoewihwfou2y4r82hofbue"
+  "PASSWORD_SECRETKEY": "OWIEFHYGUIBRLKBHJLKHOIWEFHoewihwfou2y4r82hofbue",
+  "host": [
+    "http://192.168.0.109:8009",
+    "http://app3495.acapp.acwing.com.cn:8001"
+  ],
+  "mode": 0
 }
