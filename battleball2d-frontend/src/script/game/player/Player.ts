@@ -11,6 +11,8 @@ import ZoomUpdater from "../updater/effect/ZoomUpdater";
 import pubsub from "pubsub-js";
 import ShootMooney from "../skill/ShootMooney";
 import Particle from "../skill/items/ball/Particle";
+import Buff from "../buff/Buff";
+import BeatenBackBuff from "../buff/BeatenBackBuff";
 
 class Player extends GameObject implements Collisionable {
   config: PlayerConfig
@@ -22,8 +24,8 @@ class Player extends GameObject implements Collisionable {
   skills: Skill[] = [];
   HP: number;
 
+  public buffs: Buff[] = [];
   protected isAlive: Boolean = true;
-
   private handlers: any[] = [];
 
   constructor(root: Game, position: TypePosition, config: PlayerConfig) {
@@ -43,7 +45,7 @@ class Player extends GameObject implements Collisionable {
   checkAttacked(): void {}
 
   afterAttacked(obj: any): void {
-    const angle = C.angle(this.position, obj.position);
+    let angle = C.angle(this.position, obj.position);
     let {x, y} = this.position!;
     x += this.config.radius * Math.cos(angle);
     y += this.config.radius * Math.sin(angle);
@@ -57,6 +59,14 @@ class Player extends GameObject implements Collisionable {
         maxTime: 0.5,
         radius: 0.05
       });
+    }
+
+    // beatBuff
+    if (obj.config && obj.config.damage) {
+      const damage = obj.config.damage;
+      const dist = damage / 8;
+      const buff = new BeatenBackBuff(this, angle + Math.PI, dist, 0.5);
+      buff.addTo(this);
     }
   }
 
