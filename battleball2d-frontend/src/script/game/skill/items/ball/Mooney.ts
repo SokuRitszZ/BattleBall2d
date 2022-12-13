@@ -34,16 +34,21 @@ class Mooney extends Ball implements Collisionable {
   }
 
   afterAttacked(params?: any): void {
+    // recently touch
     this.hasTouch.add(params);
     setTimeout(() => {
       this.hasTouch.delete(params);
     }, 1000);
-    const angle = this.config.angle;
-    const normal = C.angle(this.position, params.position);
-    const normal2 = normal + Math.PI;
-    const t = normal - angle;
-    const newAngle = normal2 + t;
-    this.updaters.filter(updater => updater instanceof DirectMoveUpdater && updater.setConfig("angle", newAngle));
+
+    // changeAngle
+    let angle = this.config.angle;
+    const normal = C.angle(params.position, this.position);
+    const type = C.angleType(angle, normal);
+    if (type === -1) { // 钝角
+      const tangent = normal + Math.PI / 2;
+      const newAngle = C.angleMod(tangent + tangent - angle);
+      this.updaters.filter(updater => updater instanceof DirectMoveUpdater && updater.setConfig("angle", newAngle));
+    }
   }
 
 

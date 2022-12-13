@@ -26,6 +26,29 @@ class C {
     const index = Math.floor(n * Math.random());
     return list[index];
   }
+
+  static cross(p: TypePosition, q: TypePosition) {
+    if (p && q) return (p.x * q.y - p.y * q.x);
+    return 0;
+  }
+
+  static angleType(a: number, b: number) {
+    const pa: TypePosition = {
+      x: Math.cos(a),
+      y: Math.sin(a)
+    };
+    const pb: TypePosition = {
+      x: Math.cos(b),
+      y: Math.sin(b)
+    };
+    const lc = this.distance(pa, pb);
+    const res = -(lc * lc - 1 - 1) / 2;
+    return !!res ? res / Math.abs(res) : 0;
+  }
+
+  static angleMod(angle: number) {
+    return angle * 1000 % Math.floor(Math.PI * 2 * 1000) / 1000;
+  }
 }
 
 export default C;
